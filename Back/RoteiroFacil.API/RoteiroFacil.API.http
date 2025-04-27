@@ -1,6 +1,0 @@
-@RoteiroFacil.API_HostAddress = http://localhost:5186
-
-GET {{RoteiroFacil.API_HostAddress}}/weatherforecast/
-Accept: application/json
-
-###
