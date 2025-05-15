@@ -13,6 +13,8 @@ import { Router, RouterLink } from '@angular/router';
 import { MatSelectModule } from '@angular/material/select';
 import { FlexLayoutModule } from '@angular/flex-layout';
 import { ProdutoModel } from '../../../models/produto.model';
+import { ProdutoService } from '../../../services/produto.service';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-produto-cadastro',
@@ -26,15 +28,41 @@ import { ProdutoModel } from '../../../models/produto.model';
     RouterLink,
     MatSelectModule,
     FlexLayoutModule,
+    CommonModule,
   ],
   templateUrl: './produto-cadastro.component.html',
   styleUrl: './produto-cadastro.component.css',
 })
 export class ProdutoCadastroComponent {
   produtoForm!: FormGroup;
-  constructor(private router: Router) {
+  tpProduto = [
+    {
+      id: 1,
+      tipo: 'Cereal',
+      descricao: 'cereal',
+    },
+    {
+      id: 2,
+      tipo: 'Frio',
+      descricao: 'cereal',
+    },
+  ];
+  constructor(private router: Router, private service: ProdutoService) {
     const nav = router.getCurrentNavigation();
     const produtoEditar: ProdutoModel = nav?.extras.state?.['produto'];
+    this.preencherCamposFormulario(produtoEditar);
+  }
+  salvarProduto() {
+    if (this.produtoForm.valid) {
+      this.produtoForm.value.dthCriacao = new Date(
+        this.produtoForm.value.dthCriacao
+      ).toISOString();
+      const produto: ProdutoModel = this.produtoForm.value;
+      console.log(produto);
+      this.service.cadastrarProduto(produto);
+    }
+  }
+  preencherCamposFormulario(produtoEditar: ProdutoModel) {
     if (produtoEditar) {
       this.produtoForm = new FormGroup({
         id: new FormControl(produtoEditar.id),
@@ -49,27 +77,22 @@ export class ProdutoCadastroComponent {
         ]),
         marca: new FormControl(produtoEditar.marca, Validators.required),
         fAtivo: new FormControl(produtoEditar.fAtivo, Validators.required),
-        dthCadastro: new FormControl(produtoEditar.dthCadastro),
+        dthCriacao: new FormControl(produtoEditar.dthCriacao),
         descricao: new FormControl(produtoEditar.descricao),
+        valor: new FormControl(produtoEditar.valor, Validators.required),
       });
-      console.log(this.produtoForm.value);
     } else {
       this.produtoForm = new FormGroup({
-        id: new FormControl(''),
+        id: new FormControl(0),
         Nome: new FormControl('', Validators.required),
         tipoProduto: new FormControl('', Validators.required),
         qtd: new FormControl('', [Validators.required, Validators.min(0)]),
         marca: new FormControl('', Validators.required),
         fAtivo: new FormControl('0', Validators.required),
-        dthCadastro: new FormControl(new Date().toISOString().split('T')[0]),
+        dthCriacao: new FormControl(new Date().toISOString().split('T')[0]),
         descricao: new FormControl(''),
+        valor: new FormControl(0, Validators.required),
       });
-    }
-  }
-  salvarProduto() {
-    if (this.produtoForm.valid) {
-      const produto: ProdutoModel = this.produtoForm.value;
-      console.log(produto);
     }
   }
 }

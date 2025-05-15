@@ -30,7 +30,7 @@ import { RouterLink } from '@angular/router';
 })
 export class LoginComponent {
   loginForm: FormGroup = new FormGroup({
-    usuario: new FormControl('', Validators.required),
+    email: new FormControl('', Validators.required),
     password: new FormControl('', Validators.required),
   });
   constructor(private snackBar: MatSnackBar, private service: LoginService) {}

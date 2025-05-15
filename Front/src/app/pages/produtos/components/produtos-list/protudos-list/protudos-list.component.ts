@@ -8,9 +8,12 @@ import { ProdutoModel } from '../../../models/produto.model';
 import { MatDialog } from '@angular/material/dialog';
 import { DialogFiltroProdutoComponent } from '../../dialog-filtro-produto/dialog-filtro-produto.component';
 import { DialogInativarProdutoComponent } from '../../dialog-inativar-produto/dialog-inativar-produto.component';
-import { CommonModule } from '@angular/common';
+import { CommonModule, DatePipe } from '@angular/common';
 import { EtiquetaComponent } from '../../etiqueta/etiqueta.component';
 import { EtiquetaModel } from '../../../models/etiqueta.model';
+import { ProdutoService } from '../../../services/produto.service';
+import { ProdutoFiltro } from '../../../models/produtoFiltro.model';
+import { error } from 'console';
 @Component({
   selector: 'app-protudos-list',
   standalone: true,
@@ -38,11 +41,19 @@ export class ProtudosListComponent implements AfterViewInit {
     'qtd',
     'dthCadastro',
   ];
-  dataSource = new MatTableDataSource<ProdutoModel>(ELEMENT_DATA);
-
+  dataSource!: MatTableDataSource<ProdutoModel>;
+  produtoFiltro!: ProdutoFiltro;
   @ViewChild(MatPaginator) paginator!: MatPaginator;
-
-  constructor(private router: Router, private dialog: MatDialog) {}
+  _pipe: DatePipe;
+  constructor(
+    private router: Router,
+    private dialog: MatDialog,
+    private service: ProdutoService,
+    private pipe: DatePipe
+  ) {
+    this.carregarProduto();
+    this._pipe = pipe;
+  }
   ngAfterViewInit() {
     this.dataSource.paginator = this.paginator;
   }
@@ -56,6 +67,9 @@ export class ProtudosListComponent implements AfterViewInit {
 
     dialog.afterClosed().subscribe((result) => {
       //adicionar o metodo que carrega a tabela com parametros do filtro
+      if (result) {
+        this.produtoFiltro = result;
+      }
     });
   }
   inativarProduto(produto: ProdutoModel) {
@@ -81,17 +95,13 @@ export class ProtudosListComponent implements AfterViewInit {
       data: etiqueta,
     });
   }
+  async carregarProduto() {
+    this.service.listProduto(this.produtoFiltro).subscribe({
+      next: (produtoList) => {
+        this.dataSource = new MatTableDataSource<ProdutoModel>(produtoList);
+        console.log(produtoList);
+      },
+      error: (resp) => {},
+    });
+  }
 }
-
-const ELEMENT_DATA: ProdutoModel[] = [
-  {
-    id: 1,
-    nome: 'Hydrogen',
-    tipoProduto: 1,
-    descricao: 'as',
-    fAtivo: 1,
-    dthCadastro: new Date(),
-    marca: 1,
-    qtd: 1,
-  },
-];

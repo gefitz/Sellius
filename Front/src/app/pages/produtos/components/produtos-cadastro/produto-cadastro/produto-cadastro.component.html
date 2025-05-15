@@ -5,7 +5,7 @@
 <form [formGroup]="produtoForm" (ngSubmit)="salvarProduto()" class="form-group">
 
   <div>
-
+    <input type="number" matInput formControlName="id" hidden>
     <mat-form-field class="form-control">
       <mat-label for="Nome">Nome: </mat-label>
       <input type="text" matInput formControlName="Nome">
@@ -14,7 +14,7 @@
     <mat-form-field class="form-control">
       <mat-label for="TipoProduto">Tipo de Produto: </mat-label>
       <mat-select formControlName="tipoProduto">
-        <mat-option [value]="1">Cereal</mat-option>
+        <mat-option *ngFor="let item of tpProduto" [value]="item">{{item.tipo}}</mat-option>
       </mat-select>
       <mat-error>O tipo do produto e obrigatorio</mat-error>
     </mat-form-field>
@@ -40,10 +40,15 @@
       <input type="number" matInput formControlName="qtd">
       <mat-error>A quantidade e obrigatorio</mat-error>
     </mat-form-field>
+    <mat-form-field class="form-control">
+      <mat-label for="valor">Valor Unitario do Produto: </mat-label>
+      <input type="number" matInput formControlName="valor">
+      <mat-error>A quantidade e obrigatorio</mat-error>
+    </mat-form-field>
 
     <mat-form-field class="form-control">
-      <mat-label for="dthCadastro">Data Cadastro: </mat-label>
-      <input type="date" [readonly]="true" matInput formControlName="dthCadastro" />
+      <mat-label for="dthCriacao">Data Cadastro: </mat-label>
+      <input type="date" [readonly]="true" matInput formControlName="dthCriacao" />
 
     </mat-form-field>
   </div>

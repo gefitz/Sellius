@@ -9,8 +9,8 @@ import { PedidoModel } from '../../models/pedido.model';
 import { ClienteModel } from '../../../clientes/models/cliente.model';
 import { ProdutoModel } from '../../../produtos/models/produto.model';
 import { StatusPedido } from '../../models/statuspedido.enum';
-import { EstadoModel } from '../../../../services-geral/model/estado.model';
-import { CidadeModel } from '../../../../services-geral/model/cidade.model';
+import { EstadoModel } from '../../../../core/model/estado.model';
+import { CidadeModel } from '../../../../core/model/cidade.model';
 
 @Component({
   selector: 'app-pedidos',
@@ -63,18 +63,6 @@ var cliente: ClienteModel = {
   dthCadastro: new Date(),
   dthAlteracao: new Date(),
 };
-var produto: ProdutoModel[] = [
-  {
-    id: 1,
-    nome: 'Hydrogen',
-    tipoProduto: 1,
-    descricao: 'as',
-    fAtivo: 1,
-    dthCadastro: new Date(),
-    marca: 1,
-    qtd: 1,
-  },
-];
 const pedido: PedidoModel[] = [
   {
     id: 1,

@@ -19,6 +19,7 @@ import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { filter } from 'rxjs';
 import { navItemsModel } from '../../models/navItemsModel.model';
 import { LoginService } from '../../../../pages/login/services/login.service';
+import { AuthGuardService } from '../../../../core/auth-guard.service';
 
 @Component({
   selector: 'app-sidenav',
@@ -53,7 +54,8 @@ export class SidenavComponent {
     private breakpointObserver: BreakpointObserver,
     private router: Router,
     private routerActived: ActivatedRoute,
-    private loginService: LoginService
+    private loginService: LoginService,
+    private auth: AuthGuardService
   ) {
     this.vereficaIsMobile();
     this.tituloPage();

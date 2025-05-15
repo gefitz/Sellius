@@ -12,7 +12,7 @@ import { SidenavComponent } from './shared/sidenav/component/sidenav/sidenav.com
 import { AppComponent } from './app.component';
 import { AuthenticationComponent } from './shared/authentication/authentication.component';
 import { LoginComponent } from './pages/login/components/login/login.component';
-import { AuthGuardService } from './services-geral/auth-guard.service';
+import { AuthGuardService } from './core/auth-guard.service';
 import { Usuarioroutes } from './pages/usuario/usario.routes';
 import { title } from 'process';
 

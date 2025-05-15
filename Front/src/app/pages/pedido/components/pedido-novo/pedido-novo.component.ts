@@ -8,8 +8,8 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { RouterLink } from '@angular/router';
 import { ClienteModel } from '../../../clientes/models/cliente.model';
-import { CidadeModel } from '../../../../services-geral/model/cidade.model';
-import { EstadoModel } from '../../../../services-geral/model/estado.model';
+import { CidadeModel } from '../../../../core/model/cidade.model';
+import { EstadoModel } from '../../../../core/model/estado.model';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { ProdutoModel } from '../../../produtos/models/produto.model';
@@ -58,7 +58,7 @@ export class PedidoNovoComponent {
     'vlrTotal',
   ];
   novoPedidoXProduto: PedidoXProdutoModel[] = [];
-  produtos = new MatTableDataSource<ProdutoModel>(produtos);
+  produtos = new MatTableDataSource<ProdutoModel>();
   pedidoXProduto = new MatTableDataSource<PedidoXProdutoModel>(
     this.novoPedidoXProduto
   );
@@ -106,31 +106,31 @@ export class PedidoNovoComponent {
       const retDialog = this.dialog.open(DialogaddprodutoComponent, {
         data: pedidoXProduto,
       });
-      retDialog.afterClosed().subscribe((pedidoxProduto) => {
-        if (pedidoxProduto) {
-          this.novoPedidoXProduto.push(pedidoxProduto);
-          this.pedidoXProduto = new MatTableDataSource<PedidoXProdutoModel>(
-            this.novoPedidoXProduto
-          );
-          produtos = produtos.filter((p) => p.id !== produto.id);
-          this.produtos = new MatTableDataSource<ProdutoModel>(produtos);
-        }
-      });
+      // retDialog.afterClosed().subscribe((pedidoxProduto) => {
+      //   if (pedidoxProduto) {
+      //     this.novoPedidoXProduto.push(pedidoxProduto);
+      //     this.pedidoXProduto = new MatTableDataSource<PedidoXProdutoModel>(
+      //       this.novoPedidoXProduto
+      //     );
+      //     produtos = produtos.filter((p) => p.id !== produto.id);
+      //     this.produtos = new MatTableDataSource<ProdutoModel>(produtos);
+      //   }
+      // });
     }
   }
 
   removerProdutoXPedido(produto: PedidoXProdutoModel) {
-    const validaProduto = produtos.find((p) => p.id === produto.produto.id);
-    if (!validaProduto) {
-      produtos.push(produto.produto);
-      this.produtos = new MatTableDataSource<ProdutoModel>(produtos);
-      this.novoPedidoXProduto = this.novoPedidoXProduto.filter(
-        (p) => p.id !== produto.id
-      );
-      this.pedidoXProduto = new MatTableDataSource<PedidoXProdutoModel>(
-        this.novoPedidoXProduto
-      );
-    }
+    // const validaProduto = produtos.find((p) => p.id === produto.produto.id);
+    // if (!validaProduto) {
+    //   produtos.push(produto.produto);
+    //   this.produtos = new MatTableDataSource<ProdutoModel>(produtos);
+    //   this.novoPedidoXProduto = this.novoPedidoXProduto.filter(
+    //     (p) => p.id !== produto.id
+    //   );
+    //   this.pedidoXProduto = new MatTableDataSource<PedidoXProdutoModel>(
+    //     this.novoPedidoXProduto
+    //   );
+    // }
   }
   salvarPedido() {}
 
@@ -138,18 +138,6 @@ export class PedidoNovoComponent {
     const dialog = this.dialog.open(DialogFiltroProdutoComponent);
   }
 }
-var produtos: ProdutoModel[] = [
-  {
-    id: 1,
-    nome: 'Hydrogen',
-    tipoProduto: 1,
-    descricao: 'as',
-    fAtivo: 1,
-    dthCadastro: new Date(),
-    marca: 1,
-    qtd: 1,
-  },
-];
 
 const estado: EstadoModel = {
   id: 1,
