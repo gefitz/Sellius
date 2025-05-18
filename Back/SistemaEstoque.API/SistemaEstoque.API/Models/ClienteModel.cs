@@ -34,7 +34,7 @@ namespace SistemaEstoque.API.Models
                 Cidade = dto.Cidade,
                 Documento = dto.Documento,
                 dthNascimeto = dto.dthNascimeto,
-                Empresa = dto.Empresa,
+                EmpresaId = dto.EmpresaId,
                 fAtivo = dto.fAtivo,
                 Nome = dto.Nome,
                 //Pedidos = dto.Pedidos,
