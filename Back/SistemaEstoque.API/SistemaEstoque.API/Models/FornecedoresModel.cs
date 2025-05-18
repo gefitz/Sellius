@@ -10,7 +10,8 @@
         public short  fAtivo { get; set; }
         public DateTime dthCadastro { get; set; }
         public DateTime dthAlteracao { get; set; }
-        public UsuarioModel usuario { get; set; }
+        public EmpresaModel Empresa { get; set; }
+        public int EmpresaId { get; set; }
 
     }
 }

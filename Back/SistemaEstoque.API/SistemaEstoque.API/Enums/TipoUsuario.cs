@@ -2,10 +2,10 @@
 {
     public enum TipoUsuario
     {
-        Adm = 0,
-        Gerente=1,
-        Funcionario =2,
-        Cliente=3,
+        Adm = 1,
+        Gerente=2,
+        Funcionario =3,
+        Cliente=4,
 
     }
 }

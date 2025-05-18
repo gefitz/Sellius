@@ -1,26 +1,25 @@
-﻿using SistemaEstoque.API.DTOs;
+﻿using SistemaEstoque.API.Enums;
+using SistemaEstoque.API.Models;
 
-namespace SistemaEstoque.API.Models
+namespace SistemaEstoque.API.DTOs
 {
-    public class EmpresaModel
+    public class EmpresaDTO
     {
         public int id { get; set; }
         public string Nome { get; set; }
         public string CNPJ { get; set; }
         public string Telefone { get; set; }
         public string Email { get; set; }
-        public int CidadeId { get; set; }
-        public CidadeModel Cidade { get; set; }
+        public CidadeDTO Cidade { get; set; }
         public string CEP { get; set; }
         public string Rua { get; set; }
-        public int LicencaId { get; set; }
-        public LicencaModel Licenca { get; set; }
         public DateTime dthCadastro { get; set; }
         public DateTime dthAlteracao { get; set; }
+        public TipoLicenca TipoLicenca { get; set; }
 
-        public static implicit operator EmpresaModel(EmpresaDTO dto)
+        public static implicit operator  EmpresaDTO(EmpresaModel dto)
         {
-            return new EmpresaModel
+            return new EmpresaDTO
             {
                 id = dto.id,
                 Nome = dto.Nome,

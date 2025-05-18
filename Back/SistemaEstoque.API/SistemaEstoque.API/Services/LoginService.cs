@@ -8,17 +8,53 @@ using System.Text;
 using SistemaEstoque.API.DTOs;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
+using SistemaEstoque.API.Repository.Interfaces;
+using SistemaEstoque.API.Enums;
 
 namespace SistemaEstoque.API.Services
 {
     public class LoginService
     {
         private readonly IConfiguration _configuration;
-        public LoginService(IConfiguration configuration)
+        private readonly IDbMethods<LoginModel> _repository;
+        public LoginService(IConfiguration configuration, IDbMethods<LoginModel> repository)
         {
             _configuration = configuration;
+            _repository = repository;
         }
-        public async Task<bool> ValidaSenha(UsuarioModel usuario, string password)
+        public async Task<Response<string>> CriarLogin(LoginDTO login, UsuarioDTO usuario)
+        {
+            LoginModel model = login;
+            model.usuarioId = usuario.id;
+            
+            var hashSalt = CriptografiaSenha(login.Password);
+            model.Salt = hashSalt["salt"];
+            model.Hash = hashSalt["hash"];
+            if (await _repository.Create(model))
+            {
+                var token = await GerarCookie(model);
+                return token;
+            }
+            return Response<string>.Failed("Erro ao salvar o login");
+        }
+        public async Task<Response<string>> CriarLogin(LoginDTO login, ClienteDTO cliente)
+        {
+            LoginModel model = login;
+            model.Cliente = cliente;
+
+            var hashSalt = CriptografiaSenha(login.Password);
+            model.Salt = hashSalt["salt"];
+            model.Hash = hashSalt["hash"];
+            if (await _repository.Create(login))
+            {
+                var token = await GerarCookie(model);
+                return token;
+            }
+            return Response<string>.Failed("Erro ao salvar o login");
+        }
+
+        #region Metodos Privados
+        private async Task<bool> ValidaSenha(LoginModel usuario, string password)
         {
             try
             {
@@ -41,7 +77,7 @@ namespace SistemaEstoque.API.Services
                 return false;
             }
         }
-        public Dictionary<string, byte[]> CriptografiaSenha(string password)
+        private Dictionary<string, byte[]> CriptografiaSenha(string password)
         {
             Dictionary<string, byte[]> ret = new Dictionary<string, byte[]>();
             try
@@ -56,22 +92,39 @@ namespace SistemaEstoque.API.Services
             }
             catch (Exception ex)
             {
-                throw new ApplicationException("Falha ao criptografar a senha: "+ ex.Message);
+                throw new ApplicationException("Falha ao criptografar a senha: " + ex.Message);
             }
         }
-        public async Task<Response<string>> GerarCookie(UsuarioModel usuario)
+        private async Task<Response<string>> GerarCookie(LoginModel login)
         {
+            #region Claims
+            Claim[] claims = [];
+                if (login.Usuario != null)
+                {
+                     claims = new[]
+                           {
+                        new Claim("id",login.Usuario.id.ToString()),
+                        new Claim("user", login.Usuario.Nome.ToString()),
+                        new Claim("tipo", Enum.GetName(login.TipoUsuario)),
+                        new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+                    };
+                }
+                else
+                {
+                    claims = new[]
+                           {
+                        new Claim("id",login.Cliente.id.ToString()),
+                        new Claim("user", login.Cliente.Nome.ToString()),
+                        new Claim("tipo", Enum.GetName(login.TipoUsuario)),
+                        new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+                    };
+                }
+            #endregion
+
             #region GeraToken
             try
             {
-
-                var claims = new[]
-                       {
-                        new Claim("id",usuario.id.ToString()),
-                        new Claim("user", usuario.Nome.ToString()),
-                        new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
-                    };
-                var privateKy = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["jwt:secretkey"]));
+                    var privateKy = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["jwt:secretkey"]));
 
                 var crendentials = new SigningCredentials(privateKy, SecurityAlgorithms.HmacSha256);
 
@@ -93,5 +146,7 @@ namespace SistemaEstoque.API.Services
             #endregion
 
         }
+        #endregion
+
     }
 }

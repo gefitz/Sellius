@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using SistemaEstoque.API.DTOs;
+using System.ComponentModel.DataAnnotations;
 
 namespace SistemaEstoque.API.Models
 {
@@ -18,6 +19,27 @@ namespace SistemaEstoque.API.Models
         public string Telefone { get; set; }
         public List<PedidoModel> Pedidos { get; set; }
         public EmpresaModel Empresa { get; set; }
+        public int EmpresaId { get; set; }
         public short fAtivo { get; set; }
+
+        public static implicit operator ClienteModel(ClienteDTO dto)
+        {
+            return new ClienteModel
+            {
+                id = dto.id,
+                Bairro = dto.Bairro,
+                Cep = dto.CEP,
+                Telefone = dto.Telefone,
+                Email = dto.Email,
+                Cidade = dto.Cidade,
+                Documento = dto.Documento,
+                dthNascimeto = dto.dthNascimeto,
+                Empresa = dto.Empresa,
+                fAtivo = dto.fAtivo,
+                Nome = dto.Nome,
+                //Pedidos = dto.Pedidos,
+                Rua = dto.Rua,
+            };
+        }
     }
 }

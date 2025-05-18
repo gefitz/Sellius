@@ -1,4 +1,6 @@
-﻿namespace SistemaEstoque.API.Models
+﻿using SistemaEstoque.API.DTOs;
+
+namespace SistemaEstoque.API.Models
 {
     public class EstadoModel
     {
@@ -6,5 +8,10 @@
         public string Estado { get; set; }
         public string Sigla { get; set; }
         public List<CidadeModel> Cidade { get; set; }
+
+        public static implicit operator EstadoModel(EstadoDTO dto)
+        {
+            return new EstadoModel { id = dto.id, Sigla = dto.Sigla, Estado = dto.Estado };
+        }
     }
 }

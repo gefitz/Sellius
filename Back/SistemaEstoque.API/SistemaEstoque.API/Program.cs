@@ -7,8 +7,6 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Microsoft.EntityFrameworkCore;
 using SistemaEstoque.API.Context;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
-using SistemaEstoque.API.DTOs.Mapper;
 using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -22,7 +20,6 @@ builder.Services.AddSwaggerGen();
 var connection = builder.Configuration.GetConnectionString("ConnectionString");
 
 builder.Services.AddDbContext<AppDbContext>(opt => opt.UseMySql(connection, ServerVersion.AutoDetect(connection)));
-builder.Services.AddAutoMapper(typeof(MapperProfile));
 
 builder.Services.AddCors(opt =>
 {
@@ -34,13 +31,18 @@ builder.Services.AddCors(opt =>
             .AllowAnyMethod();
         });
 });
+builder.Services.AddAutoMapper(typeof(UsuarioModel));
+
 #region Repository
 builder.Services.AddScoped<IDbMethods<ClienteModel>, ClienteRepository>();
 builder.Services.AddScoped<IDbMethods<UsuarioModel>, UsuariosRepository>();
 builder.Services.AddScoped<IDbMethods<ProdutoModel>, ProdutoRepository>();
 builder.Services.AddScoped<IDbMethods<TipoProdutoModel>, TpProdutoRepository>();
 builder.Services.AddScoped<IDbMethods<PedidoModel>, PedidoRepository>();
-
+builder.Services.AddScoped<IDbMethods<EmpresaModel>, EmpresaRepository>();
+builder.Services.AddScoped<IDbMethods<LoginModel>, LoginRepository>();
+builder.Services.AddScoped<IDbMethods<LicencaModel>, LicencaRepository>();
+builder.Services.AddScoped<LogRepository>();
 #endregion
 
 #region Services
@@ -50,6 +52,8 @@ builder.Services.AddScoped<ClienteService>();
 builder.Services.AddScoped<ProdutoService>();
 builder.Services.AddScoped<TpProdutoService>();
 builder.Services.AddScoped<PedidoServices>();
+builder.Services.AddScoped<EmpresaService>();
+builder.Services.AddScoped<LicencaService>();
 #endregion
 
 builder.Services.AddControllers();

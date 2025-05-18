@@ -8,5 +8,8 @@ namespace SistemaEstoque.API.Models
         public string Tipo { get; set; }
         public string Descricao { get; set; }
         public short fAtivo { get; set; }
+        public EmpresaModel Empresa { get; set; }
+        public int EmpresaId { get; set; }
+
     }
 }

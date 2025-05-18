@@ -17,6 +17,7 @@ namespace SistemaEstoque.API.Models
         public int fAtivo { get; set; }
         public FornecedoresModel Fornecedor { get; set; }
         public EmpresaModel Empresa { get; set; }
+        public int EmpresaId { get; set; }
 
         public static implicit operator ProdutoModel(FiltroProduto filtroProduto)
         {
