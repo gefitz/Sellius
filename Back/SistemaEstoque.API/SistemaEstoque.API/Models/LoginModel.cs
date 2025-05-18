@@ -1,4 +1,5 @@
-﻿using SistemaEstoque.API.Enums;
+﻿using SistemaEstoque.API.DTOs;
+using SistemaEstoque.API.Enums;
 
 namespace SistemaEstoque.API.Models
 {
@@ -15,5 +16,17 @@ namespace SistemaEstoque.API.Models
         public UsuarioModel? Usuario { get; set; }
         public int? clienteId { get; set; }
         public ClienteModel? Cliente { get; set; }
+
+        public static implicit operator LoginModel(LoginDTO dto)
+        {
+            return new LoginModel
+            {
+                id = dto.id,
+                Email = dto.Email,
+                Documento = dto.Documento,
+                fEmailConfirmado = dto.fEmailConfirmado,
+                TipoUsuario = dto.TipoUsuario,
+            };
+        }
     }
 }

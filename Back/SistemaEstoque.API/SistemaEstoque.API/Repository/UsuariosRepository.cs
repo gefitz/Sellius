@@ -3,33 +3,32 @@ using SistemaEstoque.API.Models;
 using SistemaEstoque.API.Repository.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using SistemaEstoque.API.DTOs;
+using SistemaEstoque.API.Services;
 
 namespace SistemaEstoque.API.Repository
 {
     public class UsuariosRepository : IDbMethods<UsuarioModel>
     {
         private readonly AppDbContext _context;
+        private readonly LogRepository _log;
 
-        public UsuariosRepository(AppDbContext context)
+        public UsuariosRepository(AppDbContext context, LogRepository log)
         {
             _context = context;
+            _log = log;
         }
 
         public async Task<bool> Create(UsuarioModel usuario)
         {
             try
             {
-                var cidade = await _context.Cidades.Where(x => x.id == usuario.Cidade.id).FirstOrDefaultAsync();
-                if (cidade != null)
-                {
-                    usuario.Cidade = cidade;
-                }
                 _context.Add(usuario);
                 await _context.SaveChangesAsync();
                 return true;
             }
             catch (Exception ex)
             {
+                _log.Error(ex);
                 return false;
             }
 
@@ -53,17 +52,29 @@ namespace SistemaEstoque.API.Repository
         {
             try
             {
-
-
-                var ret = _context.Usuarios.Where(u => u.Email == usuario.Email).FirstOrDefault();
-                if (ret != null)
+                UsuarioModel ret = new UsuarioModel();
+                if (usuario.EmpresaId != 0)
                 {
-                    return ret;
+
+                    ret = await _context.Usuarios.Where(u => u.Email == usuario.Email && u.EmpresaId == usuario.EmpresaId).FirstOrDefaultAsync();
+                    if (ret != null)
+                    {
+                        return ret;
+                    }
+                }
+                else
+                {
+                    ret = await _context.Usuarios.Where(u => u.Email == usuario.Email).FirstOrDefaultAsync();
+                    if (ret != null)
+                    {
+                        return ret;
+                    }
                 }
                 return null;
             }
             catch (Exception ex)
             {
+                _log.Error(ex);
                 return null;
             }
         }

@@ -1,29 +1,38 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using SistemaEstoque.API.Enums;
+using SistemaEstoque.API.Models;
+using System.ComponentModel.DataAnnotations;
 
 namespace SistemaEstoque.API.DTOs
 {
     public class UsuarioDTO
     {
         public int id { get; set; }
-        [Required(ErrorMessage = "Nome necessario")]
         public string Nome { get; set; }
-       
-        [Required(ErrorMessage = "Documento necessario")]
         public string Documento { get; set; }
-
-        [Required(ErrorMessage = "Email necessario")]
         public string Email { get; set; }
-
-        [Required(ErrorMessage = "Senha necessario")]
-        [Display(Name = "Senha")]
-        public string Password { get; set; }
-        [Required(ErrorMessage = "Cidade necessario")]
-
-        public CidadeDTO Cidade { get; set; }
-        [Required(ErrorMessage = "CEP necessario")]
-
+        public int CidadeId { get; set; }
         public string CEP { get; set; }
-        [Required(ErrorMessage = "Rua necessario")]
         public string Rua { get; set; }
+        [DataType(DataType.Date)]
+        public DateTime dthCadastro { get; set; }
+        public int EmpresaId { get; set; }
+        public TipoUsuario TipoUsuario { get; set; }
+
+        public static implicit operator  UsuarioDTO(UsuarioModel model)
+        {
+            return new UsuarioDTO
+            {
+                id = model.id,
+                Nome = model.Nome,
+                Documento = model.Documento,
+                Email = model.Email,
+                Rua = model.Rua,
+                CidadeId = model.CidadeId,
+                CEP = model.CEP,
+                dthCadastro = model.dthCadastro,
+                EmpresaId = model.EmpresaId,
+                TipoUsuario = model.TipoUsuario
+            };
+        }
     }
 }

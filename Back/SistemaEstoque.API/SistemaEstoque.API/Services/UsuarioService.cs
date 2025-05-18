@@ -9,13 +9,11 @@ namespace SistemaEstoque.API.Services
     public class UsuarioService
     {
         private readonly IDbMethods<UsuarioModel> _repository;
-        private readonly IMapper _mapper;
         private readonly LoginService _login;
 
-        public UsuarioService(IDbMethods<UsuarioModel> repository, IMapper mapper, LoginService login)
+        public UsuarioService(IDbMethods<UsuarioModel> repository, LoginService login)
         {
             _repository = repository;
-            _mapper = mapper;
             _login = login;
         }
         public async Task<Response<UsuarioDTO>> CriarUsuario(UsuarioDTO dTO)
@@ -23,17 +21,13 @@ namespace SistemaEstoque.API.Services
             try
             {
 
-                UsuarioModel usuario = _mapper.Map<UsuarioModel>(dTO);
-                var vereficaUsuario = await _repository.BuscaDireto(usuario);
-                if(vereficaUsuario != null) { return Response<UsuarioDTO>.Failed("Email já esta sendo utilizado"); }
-                Dictionary<string, byte[]> hashSalt = _login.CriptografiaSenha(dTO.Password);
-                if (hashSalt.Count == 0) { return Response<UsuarioDTO>.Failed("Falha ao criptografar a senha"); }
-                usuario.Salt = hashSalt["salt"];
-                usuario.Hash = hashSalt["hash"];
-                if(await _repository.Create(usuario))
-                {
+                UsuarioModel usuario = dTO;
+                if (await VereficaExistenciaUsuario(dTO)) { return Response<UsuarioDTO>.Failed("Email já esta sendo utilizado"); }
 
-                return Response<UsuarioDTO>.Ok();
+                if (await _repository.Create(usuario))
+                {
+                    dTO = usuario;
+                    return Response<UsuarioDTO>.Ok(dTO);
                 }
                 return Response<UsuarioDTO>.Failed("Falha ao cadastrar usuario");
             }
@@ -49,14 +43,12 @@ namespace SistemaEstoque.API.Services
             }
 
         }
-        public async Task<Response<string>> LoginAutenticacao(LoginDTO usuarioDTO)
+        public async Task<bool> VereficaExistenciaUsuario(UsuarioDTO dto)
         {
-            var usuario = _mapper.Map<UsuarioModel>(usuarioDTO);
-            var retornoUsuario = await _repository.BuscaDireto(usuario);
-            if (retornoUsuario == null) { return Response<string>.Failed("Email invalidado"); }
-            if (!await _login.ValidaSenha(retornoUsuario, usuarioDTO.Password)) { return Response<string>.Failed("Senha incorreta"); }
-            return await _login.GerarCookie(retornoUsuario);
-
+                UsuarioModel usiario = await _repository.BuscaDireto(dto);
+                if (usiario != null)
+                    return true;
+                return false;
         }
     }
 }

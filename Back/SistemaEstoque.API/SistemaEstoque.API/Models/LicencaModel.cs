@@ -1,4 +1,5 @@
-﻿using SistemaEstoque.API.Enums;
+﻿using SistemaEstoque.API.DTOs;
+using SistemaEstoque.API.Enums;
 
 namespace SistemaEstoque.API.Models
 {
@@ -9,8 +10,9 @@ namespace SistemaEstoque.API.Models
         public DateTime dthVencimento { get; set; }
         public DateTime dthInicioLincenca { get; set; }
         public decimal ValorMensal { get; set; }
+        public int UsuairosIncluirFree { get; set; }
         public int UsuariosIncluidos { get; set; }
-        public int ValorPorUsuario { get; set; }
+        public decimal ValorPorUsuario { get; set; }
         public TipoLicenca TipoLincenca { get; set; }
     }
 }

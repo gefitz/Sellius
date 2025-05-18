@@ -28,6 +28,7 @@ namespace SistemaEstoque.API.Context
     .HasOne(p => p.Pedido)
     .WithMany(p => p.Produto)
     .HasForeignKey(p => p.idPedido);
+            modelBuilder.Entity<PedidoXProduto>();
             modelBuilder.Entity<PedidoXProduto>()
                 .HasOne(p => p.Produto)
                 .WithMany(p => p.pedidos)
@@ -41,17 +42,19 @@ namespace SistemaEstoque.API.Context
 
             #region Usuario
             modelBuilder.Entity<UsuarioModel>().HasOne(c => c.Cidade);
+            modelBuilder.Entity<UsuarioModel>().HasOne(e => e.Empresa).WithMany().HasForeignKey(u => u.EmpresaId);
             #endregion
 
             #region Produto
             modelBuilder.Entity<ProdutoModel>().HasOne(tp => tp.tipoProduto);
-            modelBuilder.Entity<ProdutoModel>().HasOne(e => e.Empresa);
+            modelBuilder.Entity<ProdutoModel>().HasOne(e => e.Empresa).WithMany().HasForeignKey(p => p.EmpresaId);
             modelBuilder.Entity<ProdutoModel>().HasOne(f => f.Fornecedor);
             #endregion
 
             #region Cliente
             modelBuilder.Entity<ClienteModel>().HasOne(c => c.Cidade);
             modelBuilder.Entity<ClienteModel>().HasMany(p => p.Pedidos);
+            modelBuilder.Entity<ClienteModel>().HasOne(p => p.Empresa).WithMany().HasForeignKey(c => c.EmpresaId);
             #endregion
 
             #region Login
@@ -67,6 +70,7 @@ namespace SistemaEstoque.API.Context
                 .HasForeignKey(l => l.clienteId)
                 .OnDelete(DeleteBehavior.Restrict);
             #endregion
+
             modelBuilder.Entity<CidadeModel>()
                 .HasOne(c => c.Estado).WithMany(e => e.Cidade)
                 .HasForeignKey(e => e.id);
