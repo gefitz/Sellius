@@ -64,11 +64,6 @@ namespace SistemaEstoque.API.Context
                 .HasForeignKey(l => l.usuarioId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            modelBuilder.Entity<LoginModel>()
-                .HasOne(l => l.Cliente)
-                .WithMany()
-                .HasForeignKey(l => l.clienteId)
-                .OnDelete(DeleteBehavior.Restrict);
             #endregion
 
             modelBuilder.Entity<CidadeModel>()

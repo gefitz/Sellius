@@ -17,18 +17,19 @@ namespace SistemaEstoque.API.Controllers
         {
             _service = service;
         }
-        //[HttpPost]
-        //public async Task<IActionResult> Login(LoginDTO usuario)
-        //{
-        //    if (usuario.Email == null || usuario.Password == null)
-        //    {
-        //        return BadRequest();
-        //    }
-        //    var response = await _service.LoginAutenticacao(usuario);
-        //    if (!response.success) {
-        //        return BadRequest(response) ; 
-        //    }
-        //    return Ok(response);
-        //}
+        [HttpPost]
+        public async Task<IActionResult> Login(LoginDTO usuario)
+        {
+            if (usuario.Email == null || usuario.Password == null)
+            {
+                return BadRequest();
+            }
+            var response = await _service.LoginAutenticacao(usuario);
+            if (!response.success)
+            {
+                return BadRequest(response);
+            }
+            return Ok(response);
+        }
     }
 }

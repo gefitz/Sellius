@@ -45,7 +45,7 @@ namespace SistemaEstoque.API.Services
             }
             #endregion
 
-            if(await _repository.Create(licenca))
+            if(!await _repository.Create(licenca))
                 return 0;
             return licenca.id;
         }

@@ -10,6 +10,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using SistemaEstoque.API.Repository.Interfaces;
 using SistemaEstoque.API.Enums;
+using Microsoft.OpenApi.Extensions;
 
 namespace SistemaEstoque.API.Services
 {
@@ -26,7 +27,7 @@ namespace SistemaEstoque.API.Services
         {
             LoginModel model = login;
             model.usuarioId = usuario.id;
-            
+
             var hashSalt = CriptografiaSenha(login.Password);
             model.Salt = hashSalt["salt"];
             model.Hash = hashSalt["hash"];
@@ -37,20 +38,24 @@ namespace SistemaEstoque.API.Services
             }
             return Response<string>.Failed("Erro ao salvar o login");
         }
-        public async Task<Response<string>> CriarLogin(LoginDTO login, ClienteDTO cliente)
+        public async Task<Response<string>> LoginAutenticacao(LoginDTO login)
         {
-            LoginModel model = login;
-            model.Cliente = cliente;
-
-            var hashSalt = CriptografiaSenha(login.Password);
-            model.Salt = hashSalt["salt"];
-            model.Hash = hashSalt["hash"];
-            if (await _repository.Create(login))
+            try
             {
-                var token = await GerarCookie(model);
-                return token;
+                LoginModel usuarioAutenticar = await _repository.BuscaDireto(login);
+                if (usuarioAutenticar == null)
+                    return Response<string>.Failed("Falha ao encontrar o email cadastrado");
+                if (!await ValidaSenha(usuarioAutenticar, login.Password))
+                {
+                    return Response<string>.Failed("Senha incorreta");
+                }
+                return await GerarCookie(usuarioAutenticar);
+
             }
-            return Response<string>.Failed("Erro ao salvar o login");
+            catch (Exception ex)
+            {
+                return Response<string>.Failed(ex.Message);
+            }
         }
 
         #region Metodos Privados
@@ -99,32 +104,21 @@ namespace SistemaEstoque.API.Services
         {
             #region Claims
             Claim[] claims = [];
-                if (login.Usuario != null)
-                {
-                     claims = new[]
-                           {
-                        new Claim("id",login.Usuario.id.ToString()),
+            string tipoUsuario = Enum.GetName(login.TipoUsuario);
+            claims = new[]
+                  {
+                        new Claim("id",login.usuarioId.ToString()),
                         new Claim("user", login.Usuario.Nome.ToString()),
                         new Claim("tipo", Enum.GetName(login.TipoUsuario)),
                         new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
                     };
-                }
-                else
-                {
-                    claims = new[]
-                           {
-                        new Claim("id",login.Cliente.id.ToString()),
-                        new Claim("user", login.Cliente.Nome.ToString()),
-                        new Claim("tipo", Enum.GetName(login.TipoUsuario)),
-                        new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
-                    };
-                }
+
             #endregion
 
             #region GeraToken
             try
             {
-                    var privateKy = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["jwt:secretkey"]));
+                var privateKy = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["jwt:secretkey"]));
 
                 var crendentials = new SigningCredentials(privateKy, SecurityAlgorithms.HmacSha256);
 

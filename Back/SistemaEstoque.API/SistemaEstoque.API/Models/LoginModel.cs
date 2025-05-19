@@ -10,12 +10,10 @@ namespace SistemaEstoque.API.Models
         public byte[] Hash { get; set; }
         public byte[] Salt { get; set; }
         public string Documento { get; set; }
-        public bool fEmailConfirmado { get; set; }
-        public TipoUsuario TipoUsuario { get; set; }
+        public bool fEmailConfirmado { get; set; } = false;
+        public TipoUsuario TipoUsuario { get; set; } = 0;
         public int? usuarioId { get; set; }
         public UsuarioModel? Usuario { get; set; }
-        public int? clienteId { get; set; }
-        public ClienteModel? Cliente { get; set; }
 
         public static implicit operator LoginModel(LoginDTO dto)
         {

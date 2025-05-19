@@ -44,7 +44,7 @@ namespace SistemaEstoque.API.Services
 
                     emp.LicencaId = idLicenca;
                     #endregion
-                    if (!await VereficaExistenciaEmpresa(empresa.Empresa))
+                    if (await VereficaExistenciaEmpresa(empresa.Empresa))
                         return Response<string>.Failed("Empresa com esse cnpj ja está cadastrada");
 
                     if (!await _repository.Create(emp))

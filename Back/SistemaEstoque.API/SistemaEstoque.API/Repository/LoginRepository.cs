@@ -1,4 +1,5 @@
-﻿using SistemaEstoque.API.Context;
+﻿using Microsoft.EntityFrameworkCore;
+using SistemaEstoque.API.Context;
 using SistemaEstoque.API.Models;
 using SistemaEstoque.API.Repository.Interfaces;
 
@@ -9,15 +10,23 @@ namespace SistemaEstoque.API.Repository
         private AppDbContext _context;
         private LogRepository _log;
 
-        public LoginRepository(AppDbContext context,LogRepository log)
+        public LoginRepository(AppDbContext context, LogRepository log)
         {
             _context = context;
             _log = log;
         }
 
-        public Task<LoginModel> BuscaDireto(LoginModel obj)
+        public async Task<LoginModel> BuscaDireto(LoginModel obj)
         {
-            throw new NotImplementedException();
+            try
+            {
+                return await _context.Logins.Include(u => u.Usuario).Where(l => l.Email == obj.Email).FirstOrDefaultAsync();
+            }
+            catch (Exception ex)
+            {
+                _log.Error(ex);
+                return null;
+            }
         }
 
         public async Task<bool> Create(LoginModel obj)
