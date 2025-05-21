@@ -11,6 +11,7 @@ using System.IdentityModel.Tokens.Jwt;
 using SistemaEstoque.API.Repository.Interfaces;
 using SistemaEstoque.API.Enums;
 using Microsoft.OpenApi.Extensions;
+using SistemaEstoque.API.DTOs.CadastrosDTOs;
 
 namespace SistemaEstoque.API.Services
 {

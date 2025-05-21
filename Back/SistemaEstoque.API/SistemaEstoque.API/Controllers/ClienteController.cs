@@ -1,10 +1,10 @@
-﻿using SistemaEstoque.API.DTOs;
-using SistemaEstoque.API.Models;
+﻿using SistemaEstoque.API.Models;
 using SistemaEstoque.API.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using System.Text;
+using SistemaEstoque.API.DTOs.CadastrosDTOs;
 
 namespace SistemaEstoque.API.Controllers
 {

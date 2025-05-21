@@ -1,4 +1,5 @@
-﻿using SistemaEstoque.API.DTOs;
+﻿using SistemaEstoque.API.DTOs.CadastrosDTOs;
+using SistemaEstoque.API.DTOs.TabelasDTOs;
 using System.ComponentModel.DataAnnotations;
 
 namespace SistemaEstoque.API.Models
@@ -8,6 +9,7 @@ namespace SistemaEstoque.API.Models
         public int id { get; set; }
         public string Nome { get; set; }
         public string Descricao { get; set; }
+        public int TipoProdutoId {  get; set; }
         public TipoProdutoModel tipoProduto { get; set; }
         public float valor { get; set; }
         public int qtd { get; set; }
@@ -15,19 +17,38 @@ namespace SistemaEstoque.API.Models
         public DateTime dthAlteracao { get; set; }
         public IEnumerable<PedidoXProduto> pedidos { get; set; }
         public int fAtivo { get; set; }
+        public int FornecedorId { get; set; }
         public FornecedoresModel Fornecedor { get; set; }
         public EmpresaModel Empresa { get; set; }
         public int EmpresaId { get; set; }
 
+
+        #region Mapper
         public static implicit operator ProdutoModel(FiltroProduto filtroProduto)
         {
             return new ProdutoModel
             {
                 Nome = filtroProduto.Nome,
-                tipoProduto = new TipoProdutoModel { id = filtroProduto.tipoProduto },
+                tipoProduto = new TipoProdutoModel { id = filtroProduto.tipoProdutoId },
 
             };
         }
-
+        public static implicit operator ProdutoModel(ProdutoDTO produtoDTO)
+        {
+            return new ProdutoModel
+            {
+                id = produtoDTO.id,
+                Nome = produtoDTO.Nome,
+                Descricao = produtoDTO.Descricao,
+                TipoProdutoId = produtoDTO.tipoProdutoId,
+                valor = produtoDTO.valor,
+                qtd = produtoDTO.qtd,
+                dthCriacao = produtoDTO.dthCriacao,
+                dthAlteracao = produtoDTO.dthAlteracao,
+                FornecedorId = produtoDTO.FornecedorId,
+                EmpresaId = produtoDTO.EmpresaId,
+            };
+        }
+        #endregion
     }
 }

@@ -1,7 +1,7 @@
 ﻿using SistemaEstoque.API.Models;
 using System.ComponentModel.DataAnnotations;
 
-namespace SistemaEstoque.API.DTOs
+namespace SistemaEstoque.API.DTOs.CadastrosDTOs
 {
     public class ProdutoDTO
     {
@@ -17,7 +17,7 @@ namespace SistemaEstoque.API.DTOs
 
         [Required(ErrorMessage = "Necessario a Tipo do Produto")]
         [Display(Name = "Tipo do Produto")]
-        public TipoProdutoDTO tipoProduto { get; set; }
+        public int tipoProdutoId { get; set; }
 
         [Required(ErrorMessage = "Necessario a Valor do Produto")]
         [Display(Name = "Valor do Produto")]
@@ -30,12 +30,13 @@ namespace SistemaEstoque.API.DTOs
         public DateTime dthCriacao { get; set; }
         public DateTime dthAlteracao { get; set; }
         public int fAtivo { get; set; }
-        public FornecedoresModel Fornecedor { get; set; }
-        public EmpresaModel Empresa { get; set; }
+        public int FornecedorId { get; set; }
+        public int EmpresaId { get; set; }
 
 
 
         #region Mapper
+
         public static implicit operator ProdutoDTO(ProdutoModel model)
         {
             return new ProdutoDTO
@@ -43,17 +44,17 @@ namespace SistemaEstoque.API.DTOs
                 id = model.id,
                 Nome = model.Nome,
                 Descricao = model.Descricao,
-                tipoProduto = model.tipoProduto,
+                tipoProdutoId = model.TipoProdutoId,
                 valor = model.valor,
                 qtd = model.qtd,
                 dthCriacao = model.dthCriacao,
                 dthAlteracao = model.dthAlteracao,
-                Fornecedor = model.Fornecedor,
-                Empresa = model.Empresa,
+                FornecedorId = model.Fornecedor.id,
+                EmpresaId = model.Empresa.id,
             };
         }
 
-        public static IEnumerable<ProdutoDTO> FromModelList(IEnumerable<ProdutoModel> produtosModel)
+        public static List<ProdutoDTO> FromModelList(List<ProdutoModel> produtosModel)
         {
             List<ProdutoDTO> dtoList = new List<ProdutoDTO>();
             foreach (var item in produtosModel)
@@ -65,13 +66,6 @@ namespace SistemaEstoque.API.DTOs
         #endregion
 
     }
-    public class FiltroProduto
-    {
-        public string Nome { get; set; }
-        public int tipoProduto { get; set; }
-        public int marca { get; set; }
-        public short fAtivo { get; set; }
-        
-    }
+
 
 }

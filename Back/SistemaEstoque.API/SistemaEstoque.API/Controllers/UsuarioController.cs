@@ -1,7 +1,7 @@
-﻿using SistemaEstoque.API.DTOs;
-using SistemaEstoque.API.Models;
+﻿using SistemaEstoque.API.Models;
 using SistemaEstoque.API.Services;
 using Microsoft.AspNetCore.Mvc;
+using SistemaEstoque.API.DTOs.CadastrosDTOs;
 
 namespace SistemaEstoque.API.Controllers
 {

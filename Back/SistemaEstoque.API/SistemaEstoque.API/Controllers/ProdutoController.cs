@@ -1,8 +1,9 @@
-﻿using SistemaEstoque.API.DTOs;
-using SistemaEstoque.API.Models;
+﻿using SistemaEstoque.API.Models;
 using SistemaEstoque.API.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using SistemaEstoque.API.DTOs.CadastrosDTOs;
+using SistemaEstoque.API.DTOs.TabelasDTOs;
 
 namespace SistemaEstoque.API.Controllers
 {
@@ -18,7 +19,7 @@ namespace SistemaEstoque.API.Controllers
             _service = service;
         }
         [HttpPost("ObterProduto")]
-        public async Task<IActionResult> ObterProduto(FiltroProduto? produto)
+        public async Task<IActionResult> ObterProduto(PaginacaoTabelaResult<ProdutoDTO,FiltroProduto> produto)
         {
             var response = await _service.FiltrarProduto(produto);
             if (response.success)

@@ -2,7 +2,7 @@
 using SistemaEstoque.API.Models;
 using System.ComponentModel.DataAnnotations;
 
-namespace SistemaEstoque.API.DTOs
+namespace SistemaEstoque.API.DTOs.CadastrosDTOs
 {
     public class UsuarioDTO
     {

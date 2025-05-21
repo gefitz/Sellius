@@ -1,4 +1,4 @@
-﻿namespace SistemaEstoque.API.DTOs
+﻿namespace SistemaEstoque.API.DTOs.CadastrosDTOs
 {
     public class CadastroNovoEmpresaDTO
     {

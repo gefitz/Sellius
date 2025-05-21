@@ -1,4 +1,4 @@
-﻿using SistemaEstoque.API.DTOs;
+﻿using SistemaEstoque.API.DTOs.CadastrosDTOs;
 using SistemaEstoque.API.Enums;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;

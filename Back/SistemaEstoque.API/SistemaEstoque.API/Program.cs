@@ -8,6 +8,8 @@ using System.Text;
 using Microsoft.EntityFrameworkCore;
 using SistemaEstoque.API.Context;
 using Microsoft.OpenApi.Models;
+using SistemaEstoque.API.Repository.Produto;
+using SistemaEstoque.API.Repository.Produto.Interface;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -36,7 +38,7 @@ builder.Services.AddAutoMapper(typeof(UsuarioModel));
 #region Repository
 builder.Services.AddScoped<IDbMethods<ClienteModel>, ClienteRepository>();
 builder.Services.AddScoped<IDbMethods<UsuarioModel>, UsuariosRepository>();
-builder.Services.AddScoped<IDbMethods<ProdutoModel>, ProdutoRepository>();
+builder.Services.AddScoped<IProdutoRepository, ProdutoRepository>();
 builder.Services.AddScoped<IDbMethods<TipoProdutoModel>, TpProdutoRepository>();
 builder.Services.AddScoped<IDbMethods<PedidoModel>, PedidoRepository>();
 builder.Services.AddScoped<IDbMethods<EmpresaModel>, EmpresaRepository>();

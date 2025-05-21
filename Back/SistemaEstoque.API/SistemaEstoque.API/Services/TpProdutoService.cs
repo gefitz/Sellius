@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using SistemaEstoque.API.DTOs;
+using SistemaEstoque.API.DTOs.CadastrosDTOs;
 using SistemaEstoque.API.Models;
 using SistemaEstoque.API.Repository.Interfaces;
 

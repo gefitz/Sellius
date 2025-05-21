@@ -1,4 +1,4 @@
-﻿using SistemaEstoque.API.DTOs;
+﻿using SistemaEstoque.API.DTOs.CadastrosDTOs;
 using SistemaEstoque.API.Enums;
 
 namespace SistemaEstoque.API.Models
