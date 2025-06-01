@@ -1,37 +1,121 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Http.HttpResults;
+using SistemaEstoque.API.DTOs;
 using SistemaEstoque.API.DTOs.CadastrosDTOs;
+using SistemaEstoque.API.DTOs.TabelasDTOs;
 using SistemaEstoque.API.Models;
 using SistemaEstoque.API.Repository;
 using SistemaEstoque.API.Repository.Interfaces;
+using SistemaEstoque.API.Repository.Pedidos.Interfaces;
+using SistemaEstoque.API.Repository.Produto.Interface;
 
 namespace SistemaEstoque.API.Services
 {
     public class PedidoServices
     {
-        private readonly IDbMethods<PedidoModel> _repository;
-        private readonly IMapper _mapper;
-
-        public PedidoServices(IDbMethods<PedidoModel> repository, IMapper mapper)
+        private readonly IPedido _repository;
+        private readonly IProdutoRepository _produtoRepository;
+        public PedidoServices(IPedido repository, IProdutoRepository dbMethods)
         {
             _repository = repository;
-            _mapper = mapper;
+            _produtoRepository = dbMethods;
         }
 
-        public async Task<bool> CadastrarPedido(PedidoDTO pedidoDTO)
+        public async Task<Response<PedidoDTO>> CadastrarPedido(PedidoDTO pedidoDTO)
         {
-            PedidoModel pedido = _mapper.Map<PedidoModel>(pedidoDTO);
-            if (await _repository.Create(pedido))
-                return true;
-            return false;
+            try
+            {
+
+                PedidoModel pedido = pedidoDTO;
+                var retPedidoXProduto = await ValidaEstoqueProduto(pedidoDTO.Produtos);
+                if (!retPedidoXProduto.success)
+                {
+                    return Response<PedidoDTO>.Failed(retPedidoXProduto.errorMessage);
+                }
+                pedido.Produto = retPedidoXProduto.Data;
+                if (await _repository.Create(pedido))
+                    return Response<PedidoDTO>.Ok(pedido);
+                return Response<PedidoDTO>.Failed("Falha ao tentar criar um pedido");
+            }
+            catch (Exception ex)
+            {
+                return Response<PedidoDTO>.Failed(ex.Message);
+            }
+
 
         }
-        public async Task<IEnumerable<PedidoDTO>> BuscarPedidos(PedidoDTO? pedidoDTO)
+        public async Task<Response<PaginacaoTabelaResult<PedidoTabela, PedidoDTO>>> obterTodosPedidos(PaginacaoTabelaResult<PedidoTabela, PedidoDTO> filtro)
         {
-            PedidoModel pedido = new PedidoModel();
-            pedido.Cliente = new ClienteModel();
-            //pedido.Produto = new ProdutoModel();
-            if (pedidoDTO != null) { pedido = _mapper.Map<PedidoModel>(pedidoDTO); }
-            return _mapper.Map<IEnumerable<PedidoDTO>>(await _repository.Filtrar(pedido));
+            try
+            {
+
+                PaginacaoTabelaResult<PedidoModel, PedidoModel> model = new PaginacaoTabelaResult<PedidoModel, PedidoModel>
+                {
+                    PaginaAtual = filtro.PaginaAtual,
+                    TamanhoPagina = filtro.PaginaAtual,
+                    TotalPaginas = filtro.TotalPaginas,
+                    TotalRegistros = filtro.TotalRegistros,
+                    Filtro = filtro.Filtro
+                };
+
+                model = await _repository.Filtrar(model);
+
+                filtro = new PaginacaoTabelaResult<PedidoTabela, PedidoDTO>
+                {
+                    PaginaAtual = model.PaginaAtual,
+                    TamanhoPagina = model.PaginaAtual,
+                    TotalPaginas = model.TotalPaginas,
+                    TotalRegistros = model.TotalRegistros,
+                    Dados = PedidoTabela.FromList(model.Dados)
+                };
+                return Response<PaginacaoTabelaResult<PedidoTabela, PedidoDTO>>.Ok(filtro);
+            }
+            catch (Exception ex)
+            {
+                return Response<PaginacaoTabelaResult<PedidoTabela, PedidoDTO>>.Failed(ex.Message);
+            }
+        }
+
+        public async Task<Response<PedidoDTO>> UpdatePedido(PedidoDTO dto)
+        {
+            try
+            {
+
+                PedidoModel pedido = dto;
+                var retPedidoXProduto = await ValidaEstoqueProduto(dto.Produtos);
+                if (!retPedidoXProduto.success)
+                {
+                    return Response<PedidoDTO>.Failed(retPedidoXProduto.errorMessage);
+                }
+                pedido.Produto = retPedidoXProduto.Data;
+                if (await _repository.Update(pedido))
+                    return Response<PedidoDTO>.Ok(pedido);
+                return Response<PedidoDTO>.Failed("Falha ao tentar criar um pedido");
+            }
+            catch (Exception ex)
+            {
+                return Response<PedidoDTO>.Failed(ex.Message);
+            }
+
+        }
+        private async Task<Response<List<PedidoXProduto>>> ValidaEstoqueProduto(List<PedidoXProdutoDTO> pedidoXProdutoDTOs)
+        {
+            List<PedidoXProduto> pedidoXProdutos = PedidoXProduto.FromList(pedidoXProdutoDTOs);
+            for (int i = 0; i > pedidoXProdutos.Count; i++)
+            {
+                ProdutoModel produto = await _produtoRepository.BuscaDireto(new ProdutoModel { id = pedidoXProdutos[i].idProduto });
+                if (produto == null)
+                {
+                    return Response<List<PedidoXProduto>>.Failed("Id do produto não encontrado");
+                }
+                if (pedidoXProdutos[i].qtd > produto.qtd)
+                {
+                    return Response<List<PedidoXProduto>>.Failed($"A quantidade solicitada para o produto {produto.Nome} excede o estoque disponível. Por favor, revise o pedido e tente novamente.");
+                }
+                pedidoXProdutos[i].Produto = produto;
+            }
+            return Response<List<PedidoXProduto>>.Ok(pedidoXProdutos);
+
         }
 
     }

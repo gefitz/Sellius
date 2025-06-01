@@ -17,6 +17,7 @@ namespace SistemaEstoque.API.Models
         public LicencaModel Licenca { get; set; }
         public DateTime dthCadastro { get; set; }
         public DateTime dthAlteracao { get; set; }
+        public short fAtivo { get; set; }
 
         public static implicit operator EmpresaModel(EmpresaDTO dto)
         {
@@ -28,10 +29,11 @@ namespace SistemaEstoque.API.Models
                 Telefone = dto.Telefone,
                 Email = dto.Email,
                 Rua = dto.Rua,
-                Cidade = dto.Cidade,
+                CidadeId = dto.CidadeId,
                 CEP = dto.CEP,
                 dthAlteracao = dto.dthAlteracao,
                 dthCadastro = dto.dthCadastro,
+                fAtivo = dto.fAtivo
             };
         }
     }

@@ -17,8 +17,9 @@ namespace SistemaEstoque.API.DTOs.CadastrosDTOs
         public DateTime dthCadastro { get; set; }
         public int EmpresaId { get; set; }
         public TipoUsuario TipoUsuario { get; set; }
+        public short fAtivo { get; set; }
 
-        public static implicit operator  UsuarioDTO(UsuarioModel model)
+        public static implicit operator UsuarioDTO(UsuarioModel model)
         {
             return new UsuarioDTO
             {
@@ -33,6 +34,16 @@ namespace SistemaEstoque.API.DTOs.CadastrosDTOs
                 EmpresaId = model.EmpresaId,
                 TipoUsuario = model.TipoUsuario
             };
+        }
+        public static List<UsuarioDTO> FromList(List<UsuarioModel> List)
+        {
+            List<UsuarioDTO> usuarioDTOs = new List<UsuarioDTO>();
+            for (int i = 0; i < List.Count; i++)
+            {
+                usuarioDTOs.Add(usuarioDTOs[i]);
+            }
+            return usuarioDTOs;
+
         }
     }
 }

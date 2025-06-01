@@ -21,6 +21,8 @@ namespace SistemaEstoque.API.Models
         public int EmpresaId { get; set; }
         public EmpresaModel Empresa { get; set; }
         public TipoUsuario TipoUsuario { get; set; }
+        public List<PedidoModel> Pedidos { get; set; }
+        public short fAtivo { get; set; }
 
         public static implicit operator UsuarioModel(UsuarioDTO dto)
         {

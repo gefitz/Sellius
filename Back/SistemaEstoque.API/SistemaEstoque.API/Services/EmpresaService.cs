@@ -1,19 +1,21 @@
 ﻿using SistemaEstoque.API.Context;
 using SistemaEstoque.API.DTOs;
 using SistemaEstoque.API.DTOs.CadastrosDTOs;
+using SistemaEstoque.API.DTOs.TabelasDTOs;
 using SistemaEstoque.API.Models;
+using SistemaEstoque.API.Repository.Empresa.Interface;
 using SistemaEstoque.API.Repository.Interfaces;
 
 namespace SistemaEstoque.API.Services
 {
     public class EmpresaService
     {
-        private IDbMethods<EmpresaModel> _repository;
+        private IEmpresa _repository;
         private UsuarioService _usarioService;
         private LoginService _loginService;
         private AppDbContext _context;
         private LicencaService _licenca;
-        public EmpresaService(IDbMethods<EmpresaModel> repository, UsuarioService suarioService, LoginService loginService, AppDbContext context, LicencaService licenca)
+        public EmpresaService(IEmpresa repository, UsuarioService suarioService, LoginService loginService, AppDbContext context, LicencaService licenca)
         {
             _repository = repository;
             _usarioService = suarioService;
@@ -82,6 +84,77 @@ namespace SistemaEstoque.API.Services
             return token;
 
 
+        }
+        public async Task<Response<EmpresaDTO>> UpdateEmpresa(EmpresaDTO empresa)
+        {
+            try
+            {
+                EmpresaModel emp = empresa;
+                if (await _repository.Update(emp))
+                {
+                    return Response<EmpresaDTO>.Ok(empresa);
+                }
+                return Response<EmpresaDTO>.Failed("Erro ao fazer modeificação na empresa");
+            }
+            catch (Exception ex)
+            {
+                return Response<EmpresaDTO>.Failed(ex.Message);
+            }
+        }
+
+        public async Task<Response<EmpresaDTO>> InativarEmpresa(int id)
+        {
+            try
+            {
+
+                var retBuscaEmpresa = await BuscaEmpresa(id);
+                if (!retBuscaEmpresa.success)
+                    return Response<EmpresaDTO>.Failed(retBuscaEmpresa.message);
+                retBuscaEmpresa.Data.fAtivo = 0;
+                return await UpdateEmpresa(retBuscaEmpresa.Data);
+            }
+            catch (Exception ex)
+            {
+                return Response<EmpresaDTO>.Failed(ex.Message);
+            }
+        }
+        public async Task<Response<EmpresaDTO>> BuscaEmpresa(int id)
+        {
+            try
+            {
+                EmpresaModel model = new EmpresaModel { id = id };
+
+                model = await _repository.BuscaDireto(model);
+                if (model == null)
+                    return Response<EmpresaDTO>.Failed("Empresa não locazilada");
+                return Response<EmpresaDTO>.Ok(model);
+            }
+            catch (Exception ex)
+            {
+                return Response<EmpresaDTO>.Failed(ex.Message);
+            }
+        }
+        public async Task<Response<PaginacaoTabelaResult<EmpresaDTO, EmpresaDTO>>> obterTodasEmpresas(PaginacaoTabelaResult<EmpresaDTO, EmpresaDTO> paginacao)
+        {
+            try
+            {
+                PaginacaoTabelaResult<EmpresaModel, EmpresaModel> modelPaginacao = new PaginacaoTabelaResult<EmpresaModel, EmpresaModel>
+                {
+                    Filtro = paginacao.Filtro,
+                    PaginaAtual = paginacao.PaginaAtual,
+                    TamanhoPagina = paginacao.TamanhoPagina,
+                    TotalPaginas = paginacao.TotalPaginas,
+                    TotalRegistros = paginacao.TotalRegistros,
+                };
+                modelPaginacao = await _repository.Filtrar(modelPaginacao);
+                paginacao.Dados = EmpresaDTO.FromList(modelPaginacao.Dados);
+                return Response<PaginacaoTabelaResult<EmpresaDTO, EmpresaDTO>>.Ok(paginacao);
+
+            }
+            catch (Exception ex)
+            {
+                return Response<PaginacaoTabelaResult<EmpresaDTO, EmpresaDTO>>.Failed(ex.Message);
+            }
         }
         private async Task<bool> VereficaExistenciaEmpresa(EmpresaDTO empresa)
         {

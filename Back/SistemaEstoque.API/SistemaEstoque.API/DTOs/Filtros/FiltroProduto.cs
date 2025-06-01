@@ -1,4 +1,4 @@
-﻿namespace SistemaEstoque.API.DTOs.TabelasDTOs
+﻿namespace SistemaEstoque.API.DTOs.Filtros
 {
     public class FiltroProduto
     {

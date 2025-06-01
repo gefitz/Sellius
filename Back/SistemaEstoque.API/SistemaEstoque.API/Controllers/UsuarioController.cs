@@ -1,7 +1,9 @@
-﻿using SistemaEstoque.API.Models;
-using SistemaEstoque.API.Services;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
+using SistemaEstoque.API.DTOs;
 using SistemaEstoque.API.DTOs.CadastrosDTOs;
+using SistemaEstoque.API.DTOs.TabelasDTOs;
+using SistemaEstoque.API.Models;
+using SistemaEstoque.API.Services;
 
 namespace SistemaEstoque.API.Controllers
 {
@@ -16,12 +18,14 @@ namespace SistemaEstoque.API.Controllers
             _service = service;
         }
 
-        [HttpPost]
+        [HttpPost("novoUsuario")]
         public async Task<IActionResult> CadastroUsuario(UsuarioDTO usuarioDTO)
         {
-            if(!ModelState.IsValid) {
-                    return
-                    BadRequest("Necessario informalções do usuario"); }
+            if (!ModelState.IsValid)
+            {
+                var menssagemErro = string.Join("\n", ModelState.Values.SelectMany(x => x.Errors).Select(e => e.ErrorMessage));
+                return BadRequest(Response<UsuarioDTO>.Failed(menssagemErro));
+            }
             var response = await _service.CriarUsuario(usuarioDTO);
             if(response.success)
             {
@@ -29,6 +33,44 @@ namespace SistemaEstoque.API.Controllers
             }
             return BadRequest(response);
 
+        }
+        [HttpPost("obterTodosUsuarios")]
+        public async Task<IActionResult> ObterTodosUsuarios(PaginacaoTabelaResult<UsuarioDTO, UsuarioDTO> paginacao)
+        {
+            var ret = await _service.ObterTodosUsuarios(paginacao);
+            if (ret.success)
+            {
+                return Ok(ret);
+            }
+            return BadRequest(ret);
+        }
+        [HttpPut]
+        public async Task<IActionResult> UpdateUsuario(UsuarioDTO dto)
+        {
+            if (!ModelState.IsValid)
+            {
+                var menssagemErro = string.Join("\n", ModelState.Values.SelectMany(x => x.Errors).Select(e => e.ErrorMessage));
+                return BadRequest(Response<UsuarioDTO>.Failed(menssagemErro));
+            }
+            var response = await _service.UpdateUsuario(dto);
+            if (response.success) {
+                return Ok(response);
+             }
+            return BadRequest(response);
+        }
+        [HttpDelete]
+        public async Task<IActionResult> Inativar(int dto)
+        {
+            if(dto == 0)
+            {
+                return BadRequest(Response<UsuarioDTO>.Failed("O id deve ser maior do que zero"));
+            }
+            var response = await _service.InativarUsuario(dto);
+            if (response.success)
+            {
+                return Ok(response);
+            }
+            return BadRequest(response);
         }
     }
 }

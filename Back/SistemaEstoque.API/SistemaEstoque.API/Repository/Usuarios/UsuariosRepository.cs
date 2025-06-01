@@ -4,10 +4,12 @@ using SistemaEstoque.API.Repository.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using SistemaEstoque.API.DTOs;
 using SistemaEstoque.API.Services;
+using SistemaEstoque.API.Repository.Usuarios.Interfaces;
+using SistemaEstoque.API.DTOs.TabelasDTOs;
 
-namespace SistemaEstoque.API.Repository
+namespace SistemaEstoque.API.Repository.Usuarios
 {
-    public class UsuariosRepository : IDbMethods<UsuarioModel>
+    public class UsuariosRepository : IUsuario
     {
         private readonly AppDbContext _context;
         private readonly LogRepository _log;
@@ -44,9 +46,19 @@ namespace SistemaEstoque.API.Repository
             throw new NotImplementedException();
         }
 
-        public Task<bool> Update(UsuarioModel obj)
+        public async Task<bool> Update(UsuarioModel obj)
         {
-            throw new NotImplementedException();
+            try
+            {
+                _context.Entry(obj).State = EntityState.Modified;
+                await _context.SaveChangesAsync();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                _log.Error(ex);
+                throw ex;
+            }
         }
         public async Task<UsuarioModel> BuscaDireto(UsuarioModel usuario)
         {
@@ -79,5 +91,39 @@ namespace SistemaEstoque.API.Repository
             }
         }
 
+        public async Task<PaginacaoTabelaResult<UsuarioModel, UsuarioModel>> Filtrar(PaginacaoTabelaResult<UsuarioModel, UsuarioModel> obj)
+        {
+            try
+            {
+                var query = _context.Usuarios.AsQueryable();
+
+                if (!string.IsNullOrEmpty(obj.Filtro.Nome))
+                    query = query.Where(p => p.Nome.Contains(obj.Filtro.Nome));
+                if (!string.IsNullOrEmpty(obj.Filtro.Documento))
+                    query = query.Where(p => p.Documento.Contains(obj.Filtro.Documento));
+                if (obj.Filtro.fAtivo != 0)
+                    query = query.Where(p => p.fAtivo.Equals(obj.Filtro.fAtivo));
+                if (obj.Filtro.CidadeId != 0)
+                    query = query.Where(p => p.CidadeId.Equals(obj.Filtro.CidadeId));
+                query = query.Where(u => u.EmpresaId == obj.Filtro.EmpresaId);
+
+                obj.TotalRegistros = query.Count();
+                obj.TotalPaginas = (int)Math.Ceiling((double)obj.TotalRegistros / obj.TamanhoPagina);
+
+                obj.Dados = await query
+                    .OrderBy(p => p.id)
+                    .Skip((obj.PaginaAtual - 1) * obj.TotalRegistros)
+                    .Take(obj.TamanhoPagina)
+                    .ToListAsync();
+
+                return obj;
+
+            }
+            catch (Exception ex)
+            {
+                _log.Error(ex);
+                throw ex;
+            }
+        }
     }
 }

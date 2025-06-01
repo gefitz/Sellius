@@ -28,7 +28,6 @@ namespace SistemaEstoque.API.Context
     .HasOne(p => p.Pedido)
     .WithMany(p => p.Produto)
     .HasForeignKey(p => p.idPedido);
-            modelBuilder.Entity<PedidoXProduto>();
             modelBuilder.Entity<PedidoXProduto>()
                 .HasOne(p => p.Produto)
                 .WithMany(p => p.pedidos)
@@ -36,24 +35,24 @@ namespace SistemaEstoque.API.Context
             #endregion
 
             #region Pedido
-            modelBuilder.Entity<PedidoModel>().HasOne(c => c.Cliente);
-            modelBuilder.Entity<PedidoModel>().HasOne(u => u.Usuario);
+            modelBuilder.Entity<PedidoModel>().HasOne(c => c.Cliente).WithMany(c => c.Pedidos).HasForeignKey(p => p.ClienteId);
+            modelBuilder.Entity<PedidoModel>().HasOne(u => u.Usuario).WithMany(u => u.Pedidos).HasForeignKey(p => p.UsuarioId);
             #endregion
 
             #region Usuario
-            modelBuilder.Entity<UsuarioModel>().HasOne(c => c.Cidade);
+            modelBuilder.Entity<UsuarioModel>().HasOne(c => c.Cidade).WithMany().HasForeignKey(c => c.CidadeId);
             modelBuilder.Entity<UsuarioModel>().HasOne(e => e.Empresa).WithMany().HasForeignKey(u => u.EmpresaId);
             #endregion
 
             #region Produto
-            modelBuilder.Entity<ProdutoModel>().HasOne(tp => tp.tipoProduto);
+            modelBuilder.Entity<ProdutoModel>().HasOne(tp => tp.tipoProduto).WithMany(tp => tp.Produtos).HasForeignKey(p => p.TipoProdutoId);
             modelBuilder.Entity<ProdutoModel>().HasOne(e => e.Empresa).WithMany().HasForeignKey(p => p.EmpresaId);
             modelBuilder.Entity<ProdutoModel>().HasOne(f => f.Fornecedor);
+            modelBuilder.Entity<TipoProdutoModel>().HasOne(e => e.Empresa).WithMany().HasForeignKey(e => e.Empresaid);
             #endregion
 
             #region Cliente
-            modelBuilder.Entity<ClienteModel>().HasOne(c => c.Cidade);
-            modelBuilder.Entity<ClienteModel>().HasMany(p => p.Pedidos);
+            modelBuilder.Entity<ClienteModel>().HasOne(c => c.Cidade).WithMany().HasForeignKey(c => c.CidadeId);
             modelBuilder.Entity<ClienteModel>().HasOne(p => p.Empresa).WithMany().HasForeignKey(c => c.EmpresaId);
             #endregion
 
@@ -63,12 +62,22 @@ namespace SistemaEstoque.API.Context
                 .WithMany() // <- não define navegação reversa
                 .HasForeignKey(l => l.usuarioId)
                 .OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<LoginModel>()
+                .HasOne(l => l.Cliente)
+                .WithMany()
+                .HasForeignKey(c => c.ClienteId)
+                .OnDelete(DeleteBehavior.Restrict);
 
+            #endregion
+
+            #region Fornecedor
+            modelBuilder.Entity<FornecedoresModel>().HasOne(e => e.Empresa).WithMany().HasForeignKey(f => f.EmpresaId);
+            modelBuilder.Entity<FornecedoresModel>().HasOne(e => e.Cidade).WithMany().HasForeignKey(f => f.CidadeId);
             #endregion
 
             modelBuilder.Entity<CidadeModel>()
                 .HasOne(c => c.Estado).WithMany(e => e.Cidade)
-                .HasForeignKey(e => e.id);
+                .HasForeignKey(c => c.EstadoId);
 
             #endregion
         }

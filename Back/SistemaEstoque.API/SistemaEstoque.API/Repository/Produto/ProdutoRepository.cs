@@ -4,6 +4,7 @@ using SistemaEstoque.API.Repository.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using SistemaEstoque.API.DTOs.TabelasDTOs;
 using SistemaEstoque.API.Repository.Produto.Interface;
+using SistemaEstoque.API.DTOs.Filtros;
 
 namespace SistemaEstoque.API.Repository.Produto
 {
@@ -40,11 +41,6 @@ namespace SistemaEstoque.API.Repository.Produto
         {
             try
             {
-                var tpProduto = await _context.TpProdutos.Where(tp => tp.id == obj.tipoProduto.id).FirstOrDefaultAsync();
-                if (tpProduto != null)
-                {
-                    obj.tipoProduto = tpProduto;
-                }
                 _context.Produtos.Add(obj);
                 await _context.SaveChangesAsync();
                 return true;
@@ -86,7 +82,7 @@ namespace SistemaEstoque.API.Repository.Produto
                     query = query.Where(p => p.fAtivo.Equals(obj.Filtro.fAtivo));
                 if(obj.Filtro.FornecedorId != 0)
                     query = query.Where(p => p.FornecedorId.Equals(obj.Filtro.FornecedorId));
-                query.Where(p => p.EmpresaId != 0);
+                query.Where(p => p.EmpresaId == 0);
                 
                 obj.TotalRegistros = query.Count();
                 obj.TotalPaginas = (int)Math.Ceiling((double)obj.TotalRegistros / obj.TamanhoPagina);
@@ -119,6 +115,7 @@ namespace SistemaEstoque.API.Repository.Produto
                 if (tp != null)
                     obj.tipoProduto = tp;
                 _context.Produtos.Entry(obj).State = EntityState.Modified;
+                await _context.SaveChangesAsync();
                 return true;
             }
             catch (Exception ex)

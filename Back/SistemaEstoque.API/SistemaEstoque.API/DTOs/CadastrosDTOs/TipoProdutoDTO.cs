@@ -6,12 +6,9 @@ namespace SistemaEstoque.API.DTOs.CadastrosDTOs
     public class TipoProdutoDTO
     {
         public int id { get; set; }
-        [Required(ErrorMessage = "Necessario o Tipo do Produto")]
-        [Display(Name ="Tipo de Produto")]
         public string Tipo { get; set; }
-        [Required(ErrorMessage = "Necessario a Descrição do Tipo")]
-        [Display(Name = "Descrição do Tipo")]
         public string Descricao { get; set; }
+        public int EmpresaId { get; set; }
         public short fAtivo { get; set; }
 
         public static implicit operator TipoProdutoDTO(TipoProdutoModel model)
@@ -23,6 +20,15 @@ namespace SistemaEstoque.API.DTOs.CadastrosDTOs
                 Descricao = model.Descricao,
                 fAtivo = model.fAtivo
             };
+        }
+        public static List<TipoProdutoDTO> FromList(List<TipoProdutoModel> model)
+        {
+            List<TipoProdutoDTO> dTOs = new List<TipoProdutoDTO>();
+            for (int i = 0; i < model.Count; i++)
+            {
+                dTOs.Add(model[i]);
+            }
+            return dTOs;
         }
     }
 }

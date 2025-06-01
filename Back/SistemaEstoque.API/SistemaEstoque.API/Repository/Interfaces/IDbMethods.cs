@@ -6,7 +6,7 @@
         public Task<bool> Update(model obj);
         public Task<bool> Delete(model obj);
         public Task<IEnumerable<model>> Filtrar(model obj);
-        public Task<model> BuscaDireto(model obj);
+        public Task<model> BuscaDireto(model idObjeto);
         
     }
 }

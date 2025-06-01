@@ -13,7 +13,7 @@ namespace SistemaEstoque.API.DTOs.CadastrosDTOs
         [RegularExpression(@"\d+$")]
         public string Documento { get; set; }
 
-        public CidadeDTO Cidade { get; set; }
+        public int  CidadeId { get; set; }
 
         [Required(ErrorMessage = "Rua e obrigatorio")]
         public string Rua { get; set; }
@@ -28,7 +28,6 @@ namespace SistemaEstoque.API.DTOs.CadastrosDTOs
         [DataType(DataType.Date)]
         [Display(Name ="Data Nascimento")]
         public DateTime dthNascimeto { get; set; }
-        public List<PedidoDTO>? Pedidos { get; set; }
 
         [Required(ErrorMessage = "Email e obrigatorio")]
         [EmailAddress(ErrorMessage ="E-mail invalido")]
@@ -50,7 +49,7 @@ namespace SistemaEstoque.API.DTOs.CadastrosDTOs
                 CEP = dto.Cep,
                 Telefone = dto.Telefone,
                 Email = dto.Email,
-                Cidade = dto.Cidade,
+                CidadeId = dto.CidadeId,
                 Documento = dto.Documento,
                 dthNascimeto = dto.dthNascimeto,
                 EmpresaId = dto.EmpresaId,
@@ -59,6 +58,15 @@ namespace SistemaEstoque.API.DTOs.CadastrosDTOs
                 //Pedidos = dto.Pedidos,
                 Rua = dto.Rua,
             };
+        }
+        public static List<ClienteDTO> FromToList(List<ClienteModel> list)
+        {
+            List<ClienteDTO> dto = new List<ClienteDTO>();
+            for (int i = 0; i < list.Count; i++)
+            {
+                dto.Add(list[i]);
+            }
+            return dto;
         }
     }
 }

@@ -3,47 +3,66 @@ using SistemaEstoque.API.Repository;
 using Microsoft.AspNetCore.Mvc;
 using SistemaEstoque.API.Services;
 using SistemaEstoque.API.DTOs;
+using Microsoft.AspNetCore.Authorization;
+using SistemaEstoque.API.DTOs.TabelasDTOs;
+using SistemaEstoque.API.DTOs.CadastrosDTOs;
 
 namespace SistemaEstoque.API.Controllers
 {
+    [ApiController]
+    [Route("/api/[controller]")]
     public class PedidoController : Controller
     {
         private readonly PedidoServices _service;
-
         public PedidoController(PedidoServices service)
         {
             _service = service;
+
         }
-        //[HttpGet]
-        //public async Task<IActionResult> Index()
-        //{
-        //    IEnumerable<PedidoDTO> cliente = await _service.BuscarPedidos(new PedidoDTO());
-        //    ViewBag.Clientes = cliente;
-        //    return View();
-        //}
-        //[HttpPost]
-        //public async Task<IActionResult> Index(PedidoDTO pedidoDTO)
-        //{
+        [HttpPost("obterTodosPedidos")]
+        public async Task<IActionResult> obterTodosPedidos(PaginacaoTabelaResult<PedidoTabela, PedidoDTO> pedidoDTO)
+        {
+            var response = await _service.obterTodosPedidos(pedidoDTO);
+            if (response.success)
+            {
+                return Ok(response);
+            }
+            return BadRequest(response);
+        }
+        [HttpPost("novoPedido")]
+        [Authorize(Roles = "Funcionario,Admin,Gerente")]
+        public async Task<IActionResult> Cadastrar(PedidoDTO pedido)
+        {
+            if (!ModelState.IsValid)
+            {
+                var menssagemErro = string.Join("\n", ModelState.Values.SelectMany(x => x.Errors).Select(e => e.ErrorMessage));
+                return BadRequest(Response<PedidoDTO>.Failed(menssagemErro));
+            }
+            var response = await _service.CadastrarPedido(pedido);
+            if (response.success)
+            {
+                return Ok(response);
+            }
+            return BadRequest(response);
 
-        //}
-        //public async Task<IActionResult> Cadastrar()
-        //{
-        //    return View();
-        //}
-        //[HttpPost]
-        //public async Task<IActionResult> Cadastrar(PedidoDTO pedido)
-        //{
-        //    if (!ModelState.IsValid)
-        //    {
-        //        ViewBag.Error = "Pedido foi passado sem nenhuma informação";
-        //        return View();
-        //    }
-        //    if (await _service.CadastrarPedido(pedido)) { return RedirectToAction("Index", "Cliente"); }
-            
-        //    ViewBag.Error = _log.Messagem;
-        //    return View();
 
-        //}
+        }
+        [HttpPut]
+        [Authorize(Roles = "Funcionario,Admin,Gerente")]
+        public async Task<IActionResult> UpdatePedido(PedidoDTO dto)
+        {
+            if (!ModelState.IsValid)
+            {
+                var menssagemErro = string.Join("\n", ModelState.Values.SelectMany(x => x.Errors).Select(e => e.ErrorMessage));
+                return BadRequest(Response<PedidoDTO>.Failed(menssagemErro));
+            }
+            var ret = await _service.UpdatePedido(dto);
+            if (ret.success)
+            {
+                return Ok(ret);
+            }
+            return BadRequest(ret);
+        }
 
     }
 }

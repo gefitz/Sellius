@@ -2,10 +2,11 @@
 using SistemaEstoque.API.Context;
 using SistemaEstoque.API.Models;
 using SistemaEstoque.API.Repository.Interfaces;
+using SistemaEstoque.API.Repository.Login.Interfaces;
 
-namespace SistemaEstoque.API.Repository
+namespace SistemaEstoque.API.Repository.Login
 {
-    public class LoginRepository : IDbMethods<LoginModel>
+    public class LoginRepository : ILogin
     {
         private AppDbContext _context;
         private LogRepository _log;
@@ -20,7 +21,7 @@ namespace SistemaEstoque.API.Repository
         {
             try
             {
-                return await _context.Logins.Include(u => u.Usuario).Where(l => l.Email == obj.Email).FirstOrDefaultAsync();
+                return await _context.Logins.Include(u => u.Usuario).Include(c=> c.Cliente).Where(l => l.Email == obj.Email).FirstOrDefaultAsync();
             }
             catch (Exception ex)
             {
@@ -54,9 +55,35 @@ namespace SistemaEstoque.API.Repository
             throw new NotImplementedException();
         }
 
-        public Task<bool> Update(LoginModel obj)
+        public async Task<bool> Update(LoginModel obj)
         {
-            throw new NotImplementedException();
+            try
+            {
+                _context.Logins.Entry(obj).State = EntityState.Modified;
+                await _context.SaveChangesAsync();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                _log.Error(ex);
+                return false;
+            }
+        }
+        public async Task<bool> VereficaEmailExistente(LoginModel obj)
+        {
+            try
+            {
+                var login = _context.Logins.Where(l => l.Email == obj.Email && l.ClienteId == obj.ClienteId && l.EmpresaId == obj.EmpresaId).FirstOrDefault();
+                if (login != null)
+                {
+                    return true;
+                }
+                return false;
+            }catch (Exception ex)
+            {
+                _log.Error(ex);
+                throw;
+            }
         }
     }
 }

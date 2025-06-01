@@ -8,6 +8,7 @@ namespace SistemaEstoque.API.Models
         public int id { get; set; }
         public string Cidade { get; set; }
         public EstadoModel Estado { get; set; }
+        public int EstadoId { get; set; }
 
         public static implicit operator CidadeModel(CidadeDTO cidade)
         {

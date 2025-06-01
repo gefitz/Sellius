@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SistemaEstoque.API.DTOs.CadastrosDTOs;
+using SistemaEstoque.API.DTOs;
 
 namespace SistemaEstoque.API.Controllers
 {
@@ -20,9 +21,10 @@ namespace SistemaEstoque.API.Controllers
         [HttpPost]
         public async Task<IActionResult> Login(LoginDTO usuario)
         {
-            if (usuario.Email == null || usuario.Password == null)
+            if (!ModelState.IsValid)
             {
-                return BadRequest();
+                var menssagemErro = string.Join("\n", ModelState.Values.SelectMany(x => x.Errors).Select(e => e.ErrorMessage));
+                return BadRequest(Response<LoginDTO>.Failed(menssagemErro));
             }
             var response = await _service.LoginAutenticacao(usuario);
             if (!response.success)
@@ -30,6 +32,35 @@ namespace SistemaEstoque.API.Controllers
                 return BadRequest(response);
             }
             return Ok(response);
+        }
+        [HttpPost("AlterarSenha")]
+        public async Task<IActionResult> AlterarSenha(LoginDTO login)
+        {
+            if (!ModelState.IsValid)
+            {
+                var menssagemErro = string.Join("\n", ModelState.Values.SelectMany(x => x.Errors).Select(e => e.ErrorMessage));
+                return BadRequest(Response<LoginDTO>.Failed(menssagemErro));
+            }
+            var response = await _service.AlterarSenha(login);
+            if (!response.success)
+            {
+                return BadRequest(response);
+            }
+            return Ok(response);
+        }
+        [HttpPost("criarclientelogin")]
+        [Authorize(Roles = "Adm,Gerente")]
+        public async Task<IActionResult> CriarLoginCliente(LoginDTO login)
+        {
+            if (!ModelState.IsValid)
+            {
+                var menssagemErro = string.Join("\n", ModelState.Values.SelectMany(x => x.Errors).Select(e => e.ErrorMessage));
+                return BadRequest(Response<LoginDTO>.Failed(menssagemErro));
+            }
+            var ret = await _service.CriarClienteLogin(login);
+            if(ret.success)
+                return Ok(ret);
+            return BadRequest(ret);
         }
     }
 }

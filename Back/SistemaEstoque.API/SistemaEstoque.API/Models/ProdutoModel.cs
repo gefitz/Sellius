@@ -1,5 +1,5 @@
 ﻿using SistemaEstoque.API.DTOs.CadastrosDTOs;
-using SistemaEstoque.API.DTOs.TabelasDTOs;
+using SistemaEstoque.API.DTOs.Filtros;
 using System.ComponentModel.DataAnnotations;
 
 namespace SistemaEstoque.API.Models

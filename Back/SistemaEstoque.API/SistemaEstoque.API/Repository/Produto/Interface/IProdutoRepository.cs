@@ -1,4 +1,4 @@
-﻿using SistemaEstoque.API.DTOs.TabelasDTOs;
+﻿using SistemaEstoque.API.DTOs.Filtros;
 using SistemaEstoque.API.Models;
 using SistemaEstoque.API.Repository.Interfaces;
 

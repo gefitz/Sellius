@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace SistemaEstoque.API.Migrations
 {
     /// <inheritdoc />
-    public partial class criacao_tabelas : Migration
+    public partial class CriacaoTabelas : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -41,9 +41,10 @@ namespace SistemaEstoque.API.Migrations
                     Licenca = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
                     dthVencimento = table.Column<DateTime>(type: "datetime(6)", nullable: false),
                     dthInicioLincenca = table.Column<DateTime>(type: "datetime(6)", nullable: false),
-                    ValorMensal = table.Column<decimal>(type: "decimal(65,30)", nullable: false),
+                    ValorMensal = table.Column<decimal>(type: "decimal(10,2)", nullable: false),
+                    UsuairosIncluirFree = table.Column<int>(type: "int", nullable: false),
                     UsuariosIncluidos = table.Column<int>(type: "int", nullable: false),
-                    ValorPorUsuario = table.Column<int>(type: "int", nullable: false),
+                    ValorPorUsuario = table.Column<decimal>(type: "decimal(10,2)", nullable: false),
                     TipoLincenca = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
@@ -67,24 +68,6 @@ namespace SistemaEstoque.API.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Logs", x => x.id);
-                })
-                .Annotation("MySql:CharSet", "utf8mb4");
-
-            migrationBuilder.CreateTable(
-                name: "TpProdutos",
-                columns: table => new
-                {
-                    id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    Tipo = table.Column<string>(type: "longtext", nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    Descricao = table.Column<string>(type: "longtext", nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    fAtivo = table.Column<short>(type: "smallint", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_TpProdutos", x => x.id);
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
@@ -122,12 +105,12 @@ namespace SistemaEstoque.API.Migrations
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     Email = table.Column<string>(type: "longtext", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    Cidadeid = table.Column<int>(type: "int", nullable: false),
+                    CidadeId = table.Column<int>(type: "int", nullable: false),
                     CEP = table.Column<string>(type: "longtext", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     Rua = table.Column<string>(type: "longtext", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    Licencaid = table.Column<int>(type: "int", nullable: false),
+                    LicencaId = table.Column<int>(type: "int", nullable: false),
                     dthCadastro = table.Column<DateTime>(type: "datetime(6)", nullable: false),
                     dthAlteracao = table.Column<DateTime>(type: "datetime(6)", nullable: false)
                 },
@@ -135,14 +118,14 @@ namespace SistemaEstoque.API.Migrations
                 {
                     table.PrimaryKey("PK_Empresas", x => x.id);
                     table.ForeignKey(
-                        name: "FK_Empresas_Cidades_Cidadeid",
-                        column: x => x.Cidadeid,
+                        name: "FK_Empresas_Cidades_CidadeId",
+                        column: x => x.CidadeId,
                         principalTable: "Cidades",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Empresas_Licencas_Licencaid",
-                        column: x => x.Licencaid,
+                        name: "FK_Empresas_Licencas_LicencaId",
+                        column: x => x.LicencaId,
                         principalTable: "Licencas",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
@@ -159,7 +142,7 @@ namespace SistemaEstoque.API.Migrations
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     Documento = table.Column<string>(type: "longtext", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    Cidadeid = table.Column<int>(type: "int", nullable: false),
+                    CidadeId = table.Column<int>(type: "int", nullable: false),
                     Rua = table.Column<string>(type: "longtext", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     Bairro = table.Column<string>(type: "longtext", nullable: false)
@@ -171,61 +154,21 @@ namespace SistemaEstoque.API.Migrations
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     Telefone = table.Column<string>(type: "longtext", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    Empresaid = table.Column<int>(type: "int", nullable: false),
+                    EmpresaId = table.Column<int>(type: "int", nullable: false),
                     fAtivo = table.Column<short>(type: "smallint", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Clientes", x => x.id);
                     table.ForeignKey(
-                        name: "FK_Clientes_Cidades_Cidadeid",
-                        column: x => x.Cidadeid,
+                        name: "FK_Clientes_Cidades_CidadeId",
+                        column: x => x.CidadeId,
                         principalTable: "Cidades",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Clientes_Empresas_Empresaid",
-                        column: x => x.Empresaid,
-                        principalTable: "Empresas",
-                        principalColumn: "id",
-                        onDelete: ReferentialAction.Cascade);
-                })
-                .Annotation("MySql:CharSet", "utf8mb4");
-
-            migrationBuilder.CreateTable(
-                name: "Usuarios",
-                columns: table => new
-                {
-                    id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    Nome = table.Column<string>(type: "longtext", nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    Documento = table.Column<string>(type: "longtext", nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    Email = table.Column<string>(type: "longtext", nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    Hash = table.Column<byte[]>(type: "longblob", nullable: false),
-                    Salt = table.Column<byte[]>(type: "longblob", nullable: false),
-                    Cidadeid = table.Column<int>(type: "int", nullable: false),
-                    CEP = table.Column<string>(type: "longtext", nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    Rua = table.Column<string>(type: "longtext", nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    dthNascimento = table.Column<DateTime>(type: "datetime(6)", nullable: false),
-                    Empresaid = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Usuarios", x => x.id);
-                    table.ForeignKey(
-                        name: "FK_Usuarios_Cidades_Cidadeid",
-                        column: x => x.Cidadeid,
-                        principalTable: "Cidades",
-                        principalColumn: "id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Usuarios_Empresas_Empresaid",
-                        column: x => x.Empresaid,
+                        name: "FK_Clientes_Empresas_EmpresaId",
+                        column: x => x.EmpresaId,
                         principalTable: "Empresas",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
@@ -249,15 +192,122 @@ namespace SistemaEstoque.API.Migrations
                     fAtivo = table.Column<short>(type: "smallint", nullable: false),
                     dthCadastro = table.Column<DateTime>(type: "datetime(6)", nullable: false),
                     dthAlteracao = table.Column<DateTime>(type: "datetime(6)", nullable: false),
-                    usuarioid = table.Column<int>(type: "int", nullable: false)
+                    EmpresaId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Fornecedores", x => x.id);
                     table.ForeignKey(
-                        name: "FK_Fornecedores_Usuarios_usuarioid",
-                        column: x => x.usuarioid,
-                        principalTable: "Usuarios",
+                        name: "FK_Fornecedores_Empresas_EmpresaId",
+                        column: x => x.EmpresaId,
+                        principalTable: "Empresas",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
+
+            migrationBuilder.CreateTable(
+                name: "TpProdutos",
+                columns: table => new
+                {
+                    id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    Tipo = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    Descricao = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    fAtivo = table.Column<short>(type: "smallint", nullable: false),
+                    Empresaid = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_TpProdutos", x => x.id);
+                    table.ForeignKey(
+                        name: "FK_TpProdutos_Empresas_Empresaid",
+                        column: x => x.Empresaid,
+                        principalTable: "Empresas",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
+
+            migrationBuilder.CreateTable(
+                name: "Usuarios",
+                columns: table => new
+                {
+                    id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    Nome = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    Documento = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    Email = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    CidadeId = table.Column<int>(type: "int", nullable: false),
+                    CEP = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    Rua = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    dthCadastro = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    EmpresaId = table.Column<int>(type: "int", nullable: false),
+                    TipoUsuario = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Usuarios", x => x.id);
+                    table.ForeignKey(
+                        name: "FK_Usuarios_Cidades_CidadeId",
+                        column: x => x.CidadeId,
+                        principalTable: "Cidades",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Usuarios_Empresas_EmpresaId",
+                        column: x => x.EmpresaId,
+                        principalTable: "Empresas",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
+
+            migrationBuilder.CreateTable(
+                name: "Produtos",
+                columns: table => new
+                {
+                    id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    Nome = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    Descricao = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    TipoProdutoId = table.Column<int>(type: "int", nullable: false),
+                    valor = table.Column<decimal>(type: "decimal(10,2)", nullable: false),
+                    qtd = table.Column<int>(type: "int", nullable: false),
+                    dthCriacao = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    dthAlteracao = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    fAtivo = table.Column<int>(type: "int", nullable: false),
+                    FornecedorId = table.Column<int>(type: "int", nullable: false),
+                    EmpresaId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Produtos", x => x.id);
+                    table.ForeignKey(
+                        name: "FK_Produtos_Empresas_EmpresaId",
+                        column: x => x.EmpresaId,
+                        principalTable: "Empresas",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Produtos_Fornecedores_FornecedorId",
+                        column: x => x.FornecedorId,
+                        principalTable: "Fornecedores",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Produtos_TpProdutos_TipoProdutoId",
+                        column: x => x.TipoProdutoId,
+                        principalTable: "TpProdutos",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
                 })
@@ -277,18 +327,11 @@ namespace SistemaEstoque.API.Migrations
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     fEmailConfirmado = table.Column<bool>(type: "tinyint(1)", nullable: false),
                     TipoUsuario = table.Column<int>(type: "int", nullable: false),
-                    usuarioId = table.Column<int>(type: "int", nullable: true),
-                    clienteId = table.Column<int>(type: "int", nullable: true)
+                    usuarioId = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Logins", x => x.id);
-                    table.ForeignKey(
-                        name: "FK_Logins_Clientes_clienteId",
-                        column: x => x.clienteId,
-                        principalTable: "Clientes",
-                        principalColumn: "id",
-                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_Logins_Usuarios_usuarioId",
                         column: x => x.usuarioId,
@@ -305,8 +348,8 @@ namespace SistemaEstoque.API.Migrations
                     id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
                     qtd = table.Column<int>(type: "int", nullable: false),
-                    Clienteid = table.Column<int>(type: "int", nullable: false),
-                    Usuarioid = table.Column<int>(type: "int", nullable: false),
+                    ClienteId = table.Column<int>(type: "int", nullable: false),
+                    UsuarioId = table.Column<int>(type: "int", nullable: false),
                     Finalizado = table.Column<short>(type: "smallint", nullable: false),
                     dthPedido = table.Column<DateTime>(type: "datetime(6)", nullable: false)
                 },
@@ -314,58 +357,15 @@ namespace SistemaEstoque.API.Migrations
                 {
                     table.PrimaryKey("PK_Pedidos", x => x.id);
                     table.ForeignKey(
-                        name: "FK_Pedidos_Clientes_Clienteid",
-                        column: x => x.Clienteid,
+                        name: "FK_Pedidos_Clientes_ClienteId",
+                        column: x => x.ClienteId,
                         principalTable: "Clientes",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Pedidos_Usuarios_Usuarioid",
-                        column: x => x.Usuarioid,
+                        name: "FK_Pedidos_Usuarios_UsuarioId",
+                        column: x => x.UsuarioId,
                         principalTable: "Usuarios",
-                        principalColumn: "id",
-                        onDelete: ReferentialAction.Cascade);
-                })
-                .Annotation("MySql:CharSet", "utf8mb4");
-
-            migrationBuilder.CreateTable(
-                name: "Produtos",
-                columns: table => new
-                {
-                    id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    Nome = table.Column<string>(type: "longtext", nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    Descricao = table.Column<string>(type: "longtext", nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    tipoProdutoid = table.Column<int>(type: "int", nullable: false),
-                    valor = table.Column<float>(type: "float", nullable: false),
-                    qtd = table.Column<int>(type: "int", nullable: false),
-                    dthCriacao = table.Column<DateTime>(type: "datetime(6)", nullable: false),
-                    dthAlteracao = table.Column<DateTime>(type: "datetime(6)", nullable: false),
-                    fAtivo = table.Column<int>(type: "int", nullable: false),
-                    Fornecedorid = table.Column<int>(type: "int", nullable: false),
-                    Empresaid = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Produtos", x => x.id);
-                    table.ForeignKey(
-                        name: "FK_Produtos_Empresas_Empresaid",
-                        column: x => x.Empresaid,
-                        principalTable: "Empresas",
-                        principalColumn: "id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Produtos_Fornecedores_Fornecedorid",
-                        column: x => x.Fornecedorid,
-                        principalTable: "Fornecedores",
-                        principalColumn: "id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Produtos_TpProdutos_tipoProdutoid",
-                        column: x => x.tipoProdutoid,
-                        principalTable: "TpProdutos",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
                 })
@@ -380,7 +380,7 @@ namespace SistemaEstoque.API.Migrations
                     idPedido = table.Column<int>(type: "int", nullable: false),
                     idProduto = table.Column<int>(type: "int", nullable: false),
                     qtd = table.Column<int>(type: "int", nullable: false),
-                    ValorVenda = table.Column<float>(type: "float", nullable: false)
+                    ValorVenda = table.Column<decimal>(type: "decimal(10,2)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -401,34 +401,29 @@ namespace SistemaEstoque.API.Migrations
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Clientes_Cidadeid",
+                name: "IX_Clientes_CidadeId",
                 table: "Clientes",
-                column: "Cidadeid");
+                column: "CidadeId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Clientes_Empresaid",
+                name: "IX_Clientes_EmpresaId",
                 table: "Clientes",
-                column: "Empresaid");
+                column: "EmpresaId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Empresas_Cidadeid",
+                name: "IX_Empresas_CidadeId",
                 table: "Empresas",
-                column: "Cidadeid");
+                column: "CidadeId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Empresas_Licencaid",
+                name: "IX_Empresas_LicencaId",
                 table: "Empresas",
-                column: "Licencaid");
+                column: "LicencaId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Fornecedores_usuarioid",
+                name: "IX_Fornecedores_EmpresaId",
                 table: "Fornecedores",
-                column: "usuarioid");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Logins_clienteId",
-                table: "Logins",
-                column: "clienteId");
+                column: "EmpresaId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Logins_usuarioId",
@@ -436,14 +431,14 @@ namespace SistemaEstoque.API.Migrations
                 column: "usuarioId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Pedidos_Clienteid",
+                name: "IX_Pedidos_ClienteId",
                 table: "Pedidos",
-                column: "Clienteid");
+                column: "ClienteId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Pedidos_Usuarioid",
+                name: "IX_Pedidos_UsuarioId",
                 table: "Pedidos",
-                column: "Usuarioid");
+                column: "UsuarioId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_PedidoXProdutos_idPedido",
@@ -456,29 +451,34 @@ namespace SistemaEstoque.API.Migrations
                 column: "idProduto");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Produtos_Empresaid",
+                name: "IX_Produtos_EmpresaId",
                 table: "Produtos",
+                column: "EmpresaId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Produtos_FornecedorId",
+                table: "Produtos",
+                column: "FornecedorId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Produtos_TipoProdutoId",
+                table: "Produtos",
+                column: "TipoProdutoId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_TpProdutos_Empresaid",
+                table: "TpProdutos",
                 column: "Empresaid");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Produtos_Fornecedorid",
-                table: "Produtos",
-                column: "Fornecedorid");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Produtos_tipoProdutoid",
-                table: "Produtos",
-                column: "tipoProdutoid");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Usuarios_Cidadeid",
+                name: "IX_Usuarios_CidadeId",
                 table: "Usuarios",
-                column: "Cidadeid");
+                column: "CidadeId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Usuarios_Empresaid",
+                name: "IX_Usuarios_EmpresaId",
                 table: "Usuarios",
-                column: "Empresaid");
+                column: "EmpresaId");
         }
 
         /// <inheritdoc />
@@ -503,13 +503,13 @@ namespace SistemaEstoque.API.Migrations
                 name: "Clientes");
 
             migrationBuilder.DropTable(
+                name: "Usuarios");
+
+            migrationBuilder.DropTable(
                 name: "Fornecedores");
 
             migrationBuilder.DropTable(
                 name: "TpProdutos");
-
-            migrationBuilder.DropTable(
-                name: "Usuarios");
 
             migrationBuilder.DropTable(
                 name: "Empresas");

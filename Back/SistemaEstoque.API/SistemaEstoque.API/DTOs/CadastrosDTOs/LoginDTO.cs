@@ -5,11 +5,11 @@ namespace SistemaEstoque.API.DTOs.CadastrosDTOs
 {
     public class LoginDTO
     {
-        public int id { get; set; }
         public string Email { get; set; }
         public string Password { get; set; }
-        public string Documento { get; set; }
-        public bool fEmailConfirmado { get; set; } = false;
-        public TipoUsuario TipoUsuario { get; set; } 
+        public int? ClienteId { get; set; }
+        public int? usuarioId { get; set; }
+        public int EmpresaId { get; set; }
+
     }
 }

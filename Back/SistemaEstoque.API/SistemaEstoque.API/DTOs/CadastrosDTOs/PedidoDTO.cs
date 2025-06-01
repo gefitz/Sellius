@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using SistemaEstoque.API.Models;
+using System.ComponentModel.DataAnnotations;
 
 namespace SistemaEstoque.API.DTOs.CadastrosDTOs
 {
@@ -6,10 +7,23 @@ namespace SistemaEstoque.API.DTOs.CadastrosDTOs
     {
         public int id { get; set; }
         public int qtd { get; set; }
-        public ClienteDTO Cliente { get; set; }
-        public UsuarioDTO Usuario { get; set; }
-        public ProdutoDTO Produto { get; set; }
+        public int ClienteId { get; set; }
+        public int UsuarioId { get; set; }
         public short Finalizado { get; set; }
+        public List<PedidoXProdutoDTO> Produtos { get; set; }
         public DateTime dthPedido { get; set; }
+
+        public static implicit operator PedidoDTO(PedidoModel model)
+        {
+            return new PedidoDTO
+            {
+                id = model.id,
+                qtd = model.qtd,
+                ClienteId = model.ClienteId,
+                UsuarioId = model.UsuarioId,
+                Finalizado = model.Finalizado,
+                dthPedido = model.dthPedido,
+            };
+        }
     }
 }
