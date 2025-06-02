@@ -1,4 +1,6 @@
-﻿namespace SistemaEstoque.API.Models
+﻿using SistemaEstoque.API.DTOs.CadastrosDTOs;
+
+namespace SistemaEstoque.API.Models
 {
     public class FornecedoresModel
     {
@@ -10,7 +12,27 @@
         public short  fAtivo { get; set; }
         public DateTime dthCadastro { get; set; }
         public DateTime dthAlteracao { get; set; }
-        public UsuarioModel usuario { get; set; }
+        public EmpresaModel Empresa { get; set; }
+        public int EmpresaId { get; set; }
+        public int CidadeId { get; set; }
+        public CidadeModel Cidade { get; set; }
+
+        public static implicit operator  FornecedoresModel(FornecedorDTO model)
+        {
+            return new FornecedoresModel
+            {
+                id = model.id,
+                Nome = model.Nome,
+                CNPJ = model.CNPJ,
+                Telefone = model.Telefone,
+                Email = model.Email,
+                fAtivo = model.fAtivo,
+                dthAlteracao = model.dthAlteracao,
+                dthCadastro = model.dthCadastro,
+                EmpresaId = model.EmpresaId,
+                CidadeId = model.CidadeId
+            };
+        }
 
     }
 }

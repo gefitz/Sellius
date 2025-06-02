@@ -8,17 +8,109 @@ using System.Text;
 using SistemaEstoque.API.DTOs;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
+using SistemaEstoque.API.Repository.Interfaces;
+using SistemaEstoque.API.Enums;
+using Microsoft.OpenApi.Extensions;
+using SistemaEstoque.API.DTOs.CadastrosDTOs;
+using SistemaEstoque.API.Utils;
+using SistemaEstoque.API.Repository.Login.Interfaces;
 
 namespace SistemaEstoque.API.Services
 {
     public class LoginService
     {
         private readonly IConfiguration _configuration;
-        public LoginService(IConfiguration configuration)
+        private readonly ILogin _repository;
+        private readonly TokenService _tokenService;
+        private readonly ClienteService _clienteService;
+        public LoginService(IConfiguration configuration, ILogin repository,TokenService tokenService, ClienteService cliente)
         {
             _configuration = configuration;
+            _repository = repository;
+            _tokenService = tokenService;
+            _clienteService = cliente;
         }
-        public async Task<bool> ValidaSenha(UsuarioModel usuario, string password)
+        public async Task<Response<string>> CriarLogin(LoginDTO login, UsuarioDTO usuario)
+        {
+            LoginModel model = login;
+            model.usuarioId = usuario.id;
+
+           CriptografiaSenha(login.Password,model);
+
+            if (await _repository.Create(model))
+            {
+                var token = await _tokenService.GerarCookie(model);
+                return token;
+            }
+            return Response<string>.Failed("Erro ao salvar o login");
+        }
+        public async Task<Response<string>> LoginAutenticacao(LoginDTO login)
+        {
+            try
+            {
+                LoginModel usuarioAutenticar = await _repository.BuscaDireto(login);
+                if (usuarioAutenticar == null)
+                    return Response<string>.Failed("Falha ao encontrar o email cadastrado");
+                if (!await ValidaSenha(usuarioAutenticar, login.Password))
+                {
+                    return Response<string>.Failed("Senha incorreta");
+                }
+                return await _tokenService.GerarCookie(usuarioAutenticar);
+
+            }
+            catch (Exception ex)
+            {
+                return Response<string>.Failed(ex.Message);
+            }
+        }
+        public async Task<Response<LoginDTO>> AlterarSenha(LoginDTO login)
+        {
+            try
+            {
+                LoginModel loginRaiz = await _repository.BuscaDireto(login);
+                if (loginRaiz == null)
+                    return Response<LoginDTO>.Failed("Usuario não encontrado");
+                 CriptografiaSenha(login.Password,loginRaiz);
+                if (!await _repository.Update(loginRaiz))
+                    return Response<LoginDTO>.Failed("Falha ao tentar alterar a senha");
+            }
+            catch (Exception ex)
+            {
+                return Response<LoginDTO>.Failed(ex.Message);
+            }
+            return Response<LoginDTO>.Ok();
+        }
+        public async Task<Response<string>> CriarClienteLogin(LoginDTO login)
+        {
+            try
+            {
+                LoginModel loginModel = login;
+                loginModel.usuarioId = null;
+                loginModel.TipoUsuario = TipoUsuario.Cliente;
+                loginModel = CriptografiaSenha(login.Password, loginModel);
+                if(await _repository.VereficaEmailExistente(loginModel))
+                {
+                    return Response<string>.Failed("Esse email já está sendo utilizado na sua base");
+                }
+                var cliente = await _clienteService.BuscarId(Convert.ToInt32(loginModel.ClienteId));
+                if (!cliente.success)
+                {
+                    return Response<string>.Failed("Cliente não localizado para está criando o login");
+                }
+
+                if (await _repository.Create(loginModel))
+                {
+                    return await _tokenService.GerarCookie(loginModel);
+                }
+                return Response<string>.Failed("Falha ao criar o login de acesso do cliente");
+            }
+            catch (Exception ex) {
+                return Response<string>.Failed(ex.Message);
+            }
+        }
+
+        #region Metodos Privados
+        private async Task<bool> ValidaSenha(LoginModel usuario, string password)
         {
             try
             {
@@ -41,57 +133,23 @@ namespace SistemaEstoque.API.Services
                 return false;
             }
         }
-        public Dictionary<string, byte[]> CriptografiaSenha(string password)
+        private LoginModel CriptografiaSenha(string password, LoginModel login)
         {
-            Dictionary<string, byte[]> ret = new Dictionary<string, byte[]>();
             try
             {
                 using (var hmac = new HMACSHA512())
                 {
-                    ret.Add("hash", hmac.ComputeHash(Encoding.UTF8.GetBytes(password)));
-                    ret.Add("salt", hmac.Key);
+                    login.Hash  = hmac.ComputeHash(Encoding.UTF8.GetBytes(password));
+                   login.Salt = hmac.Key;
                 }
-                return ret;
-
+                return login;
             }
             catch (Exception ex)
             {
-                throw new ApplicationException("Falha ao criptografar a senha: "+ ex.Message);
+                throw new ApplicationException("Falha ao criptografar a senha: " + ex.Message);
             }
         }
-        public async Task<Response<string>> GerarCookie(UsuarioModel usuario)
-        {
-            #region GeraToken
-            try
-            {
+        #endregion
 
-                var claims = new[]
-                       {
-                        new Claim("id",usuario.id.ToString()),
-                        new Claim("user", usuario.Nome.ToString()),
-                        new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
-                    };
-                var privateKy = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["jwt:secretkey"]));
-
-                var crendentials = new SigningCredentials(privateKy, SecurityAlgorithms.HmacSha256);
-
-                var expiration = DateTime.UtcNow.AddDays(1);
-
-                JwtSecurityToken token = new JwtSecurityToken(
-                    issuer: _configuration["jwt:issuer"],
-                    audience: _configuration["jwt:audience"],
-                    claims: claims,
-                    expires: expiration,
-                    signingCredentials: crendentials);
-                return Response<string>.Ok(new JwtSecurityTokenHandler().WriteToken(token));
-
-            }
-            catch (Exception ex)
-            {
-                return Response<string>.Failed(ex.Message);
-            }
-            #endregion
-
-        }
     }
 }

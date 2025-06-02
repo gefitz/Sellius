@@ -7,9 +7,22 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Microsoft.EntityFrameworkCore;
 using SistemaEstoque.API.Context;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
-using SistemaEstoque.API.DTOs.Mapper;
 using Microsoft.OpenApi.Models;
+using SistemaEstoque.API.Repository.Produto;
+using SistemaEstoque.API.Repository.Produto.Interface;
+using SistemaEstoque.API.Repository.Fornecedor.Interfaces;
+using SistemaEstoque.API.Repository.Fornecedor;
+using SistemaEstoque.API.Repository.Cliente;
+using SistemaEstoque.API.Repository.Cliente.Interfaces;
+using SistemaEstoque.API.Utils;
+using SistemaEstoque.API.Repository.Login;
+using SistemaEstoque.API.Repository.Login.Interfaces;
+using SistemaEstoque.API.Repository.Pedidos;
+using SistemaEstoque.API.Repository.Pedidos.Interfaces;
+using SistemaEstoque.API.Repository.Empresa;
+using SistemaEstoque.API.Repository.Usuarios;
+using SistemaEstoque.API.Repository.Usuarios.Interfaces;
+using SistemaEstoque.API.Repository.Empresa.Interface;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -22,7 +35,6 @@ builder.Services.AddSwaggerGen();
 var connection = builder.Configuration.GetConnectionString("ConnectionString");
 
 builder.Services.AddDbContext<AppDbContext>(opt => opt.UseMySql(connection, ServerVersion.AutoDetect(connection)));
-builder.Services.AddAutoMapper(typeof(MapperProfile));
 
 builder.Services.AddCors(opt =>
 {
@@ -34,13 +46,19 @@ builder.Services.AddCors(opt =>
             .AllowAnyMethod();
         });
 });
-#region Repository
-builder.Services.AddScoped<IDbMethods<ClienteModel>, ClienteRepository>();
-builder.Services.AddScoped<IDbMethods<UsuarioModel>, UsuariosRepository>();
-builder.Services.AddScoped<IDbMethods<ProdutoModel>, ProdutoRepository>();
-builder.Services.AddScoped<IDbMethods<TipoProdutoModel>, TpProdutoRepository>();
-builder.Services.AddScoped<IDbMethods<PedidoModel>, PedidoRepository>();
+builder.Services.AddAutoMapper(typeof(UsuarioModel));
 
+#region Repository
+builder.Services.AddScoped<IClienteRepository, ClienteRepository>();
+builder.Services.AddScoped<IUsuario, UsuariosRepository>();
+builder.Services.AddScoped<IProdutoRepository, ProdutoRepository>();
+builder.Services.AddScoped<ITpProdutoRepository, TpProdutoRepository>();
+builder.Services.AddScoped<IPedido, PedidoRepository>();
+builder.Services.AddScoped<IEmpresa, EmpresaRepository>();
+builder.Services.AddScoped<ILogin, LoginRepository>();
+builder.Services.AddScoped<IDbMethods<LicencaModel>, LicencaRepository>();
+builder.Services.AddScoped<IFornecedorRepository, FornecedorRepository>();
+builder.Services.AddScoped<LogRepository>();
 #endregion
 
 #region Services
@@ -50,6 +68,10 @@ builder.Services.AddScoped<ClienteService>();
 builder.Services.AddScoped<ProdutoService>();
 builder.Services.AddScoped<TpProdutoService>();
 builder.Services.AddScoped<PedidoServices>();
+builder.Services.AddScoped<EmpresaService>();
+builder.Services.AddScoped<LicencaService>();
+builder.Services.AddScoped<FornecedorService>();
+builder.Services.AddTransient<TokenService>();
 #endregion
 
 builder.Services.AddControllers();

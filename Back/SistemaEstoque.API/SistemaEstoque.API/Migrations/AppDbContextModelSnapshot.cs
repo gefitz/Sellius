@@ -25,13 +25,21 @@ namespace SistemaEstoque.API.Migrations
             modelBuilder.Entity("SistemaEstoque.API.Models.CidadeModel", b =>
                 {
                     b.Property<int>("id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("int");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("id"));
 
                     b.Property<string>("Cidade")
                         .IsRequired()
                         .HasColumnType("longtext");
 
+                    b.Property<int>("EstadoId")
+                        .HasColumnType("int");
+
                     b.HasKey("id");
+
+                    b.HasIndex("EstadoId");
 
                     b.ToTable("Cidades");
                 });
@@ -52,7 +60,7 @@ namespace SistemaEstoque.API.Migrations
                         .IsRequired()
                         .HasColumnType("longtext");
 
-                    b.Property<int>("Cidadeid")
+                    b.Property<int>("CidadeId")
                         .HasColumnType("int");
 
                     b.Property<string>("Documento")
@@ -63,7 +71,7 @@ namespace SistemaEstoque.API.Migrations
                         .IsRequired()
                         .HasColumnType("longtext");
 
-                    b.Property<int>("Empresaid")
+                    b.Property<int>("EmpresaId")
                         .HasColumnType("int");
 
                     b.Property<string>("Nome")
@@ -86,9 +94,9 @@ namespace SistemaEstoque.API.Migrations
 
                     b.HasKey("id");
 
-                    b.HasIndex("Cidadeid");
+                    b.HasIndex("CidadeId");
 
-                    b.HasIndex("Empresaid");
+                    b.HasIndex("EmpresaId");
 
                     b.ToTable("Clientes");
                 });
@@ -109,14 +117,14 @@ namespace SistemaEstoque.API.Migrations
                         .IsRequired()
                         .HasColumnType("longtext");
 
-                    b.Property<int>("Cidadeid")
+                    b.Property<int>("CidadeId")
                         .HasColumnType("int");
 
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasColumnType("longtext");
 
-                    b.Property<int>("Licencaid")
+                    b.Property<int>("LicencaId")
                         .HasColumnType("int");
 
                     b.Property<string>("Nome")
@@ -139,9 +147,9 @@ namespace SistemaEstoque.API.Migrations
 
                     b.HasKey("id");
 
-                    b.HasIndex("Cidadeid");
+                    b.HasIndex("CidadeId");
 
-                    b.HasIndex("Licencaid");
+                    b.HasIndex("LicencaId");
 
                     b.ToTable("Empresas");
                 });
@@ -179,9 +187,15 @@ namespace SistemaEstoque.API.Migrations
                         .IsRequired()
                         .HasColumnType("longtext");
 
+                    b.Property<int>("CidadeId")
+                        .HasColumnType("int");
+
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasColumnType("longtext");
+
+                    b.Property<int>("EmpresaId")
+                        .HasColumnType("int");
 
                     b.Property<string>("Nome")
                         .IsRequired()
@@ -200,12 +214,11 @@ namespace SistemaEstoque.API.Migrations
                     b.Property<short>("fAtivo")
                         .HasColumnType("smallint");
 
-                    b.Property<int>("usuarioid")
-                        .HasColumnType("int");
-
                     b.HasKey("id");
 
-                    b.HasIndex("usuarioid");
+                    b.HasIndex("CidadeId");
+
+                    b.HasIndex("EmpresaId");
 
                     b.ToTable("Fornecedores");
                 });
@@ -224,14 +237,17 @@ namespace SistemaEstoque.API.Migrations
                     b.Property<int>("TipoLincenca")
                         .HasColumnType("int");
 
+                    b.Property<int>("UsuairosIncluirFree")
+                        .HasColumnType("int");
+
                     b.Property<int>("UsuariosIncluidos")
                         .HasColumnType("int");
 
                     b.Property<decimal>("ValorMensal")
                         .HasColumnType("decimal(65,30)");
 
-                    b.Property<int>("ValorPorUsuario")
-                        .HasColumnType("int");
+                    b.Property<decimal>("ValorPorUsuario")
+                        .HasColumnType("decimal(65,30)");
 
                     b.Property<DateTime>("dthInicioLincenca")
                         .HasColumnType("datetime(6)");
@@ -276,13 +292,15 @@ namespace SistemaEstoque.API.Migrations
 
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("id"));
 
-                    b.Property<string>("Documento")
-                        .IsRequired()
-                        .HasColumnType("longtext");
+                    b.Property<int?>("ClienteId")
+                        .HasColumnType("int");
 
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasColumnType("longtext");
+
+                    b.Property<int>("EmpresaId")
+                        .HasColumnType("int");
 
                     b.Property<byte[]>("Hash")
                         .IsRequired()
@@ -295,9 +313,6 @@ namespace SistemaEstoque.API.Migrations
                     b.Property<int>("TipoUsuario")
                         .HasColumnType("int");
 
-                    b.Property<int?>("clienteId")
-                        .HasColumnType("int");
-
                     b.Property<bool>("fEmailConfirmado")
                         .HasColumnType("tinyint(1)");
 
@@ -306,7 +321,9 @@ namespace SistemaEstoque.API.Migrations
 
                     b.HasKey("id");
 
-                    b.HasIndex("clienteId");
+                    b.HasIndex("ClienteId");
+
+                    b.HasIndex("EmpresaId");
 
                     b.HasIndex("usuarioId");
 
@@ -321,13 +338,13 @@ namespace SistemaEstoque.API.Migrations
 
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("id"));
 
-                    b.Property<int>("Clienteid")
+                    b.Property<int>("ClienteId")
                         .HasColumnType("int");
 
                     b.Property<short>("Finalizado")
                         .HasColumnType("smallint");
 
-                    b.Property<int>("Usuarioid")
+                    b.Property<int>("UsuarioId")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("dthPedido")
@@ -338,9 +355,9 @@ namespace SistemaEstoque.API.Migrations
 
                     b.HasKey("id");
 
-                    b.HasIndex("Clienteid");
+                    b.HasIndex("ClienteId");
 
-                    b.HasIndex("Usuarioid");
+                    b.HasIndex("UsuarioId");
 
                     b.ToTable("Pedidos");
                 });
@@ -386,15 +403,18 @@ namespace SistemaEstoque.API.Migrations
                         .IsRequired()
                         .HasColumnType("longtext");
 
-                    b.Property<int>("Empresaid")
+                    b.Property<int>("EmpresaId")
                         .HasColumnType("int");
 
-                    b.Property<int>("Fornecedorid")
+                    b.Property<int>("FornecedorId")
                         .HasColumnType("int");
 
                     b.Property<string>("Nome")
                         .IsRequired()
                         .HasColumnType("longtext");
+
+                    b.Property<int>("TipoProdutoId")
+                        .HasColumnType("int");
 
                     b.Property<DateTime>("dthAlteracao")
                         .HasColumnType("datetime(6)");
@@ -408,19 +428,16 @@ namespace SistemaEstoque.API.Migrations
                     b.Property<int>("qtd")
                         .HasColumnType("int");
 
-                    b.Property<int>("tipoProdutoid")
-                        .HasColumnType("int");
-
                     b.Property<float>("valor")
                         .HasColumnType("float");
 
                     b.HasKey("id");
 
-                    b.HasIndex("Empresaid");
+                    b.HasIndex("EmpresaId");
 
-                    b.HasIndex("Fornecedorid");
+                    b.HasIndex("FornecedorId");
 
-                    b.HasIndex("tipoProdutoid");
+                    b.HasIndex("TipoProdutoId");
 
                     b.ToTable("Produtos");
                 });
@@ -437,6 +454,9 @@ namespace SistemaEstoque.API.Migrations
                         .IsRequired()
                         .HasColumnType("longtext");
 
+                    b.Property<int>("Empresaid")
+                        .HasColumnType("int");
+
                     b.Property<string>("Tipo")
                         .IsRequired()
                         .HasColumnType("longtext");
@@ -445,6 +465,8 @@ namespace SistemaEstoque.API.Migrations
                         .HasColumnType("smallint");
 
                     b.HasKey("id");
+
+                    b.HasIndex("Empresaid");
 
                     b.ToTable("TpProdutos");
                 });
@@ -461,7 +483,7 @@ namespace SistemaEstoque.API.Migrations
                         .IsRequired()
                         .HasColumnType("longtext");
 
-                    b.Property<int>("Cidadeid")
+                    b.Property<int>("CidadeId")
                         .HasColumnType("int");
 
                     b.Property<string>("Documento")
@@ -472,12 +494,8 @@ namespace SistemaEstoque.API.Migrations
                         .IsRequired()
                         .HasColumnType("longtext");
 
-                    b.Property<int>("Empresaid")
+                    b.Property<int>("EmpresaId")
                         .HasColumnType("int");
-
-                    b.Property<byte[]>("Hash")
-                        .IsRequired()
-                        .HasColumnType("longblob");
 
                     b.Property<string>("Nome")
                         .IsRequired()
@@ -487,18 +505,17 @@ namespace SistemaEstoque.API.Migrations
                         .IsRequired()
                         .HasColumnType("longtext");
 
-                    b.Property<byte[]>("Salt")
-                        .IsRequired()
-                        .HasColumnType("longblob");
+                    b.Property<int>("TipoUsuario")
+                        .HasColumnType("int");
 
-                    b.Property<DateTime>("dthNascimento")
+                    b.Property<DateTime>("dthCadastro")
                         .HasColumnType("datetime(6)");
 
                     b.HasKey("id");
 
-                    b.HasIndex("Cidadeid");
+                    b.HasIndex("CidadeId");
 
-                    b.HasIndex("Empresaid");
+                    b.HasIndex("EmpresaId");
 
                     b.ToTable("Usuarios");
                 });
@@ -507,7 +524,7 @@ namespace SistemaEstoque.API.Migrations
                 {
                     b.HasOne("SistemaEstoque.API.Models.EstadoModel", "Estado")
                         .WithMany("Cidade")
-                        .HasForeignKey("id")
+                        .HasForeignKey("EstadoId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -518,13 +535,13 @@ namespace SistemaEstoque.API.Migrations
                 {
                     b.HasOne("SistemaEstoque.API.Models.CidadeModel", "Cidade")
                         .WithMany()
-                        .HasForeignKey("Cidadeid")
+                        .HasForeignKey("CidadeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("SistemaEstoque.API.Models.EmpresaModel", "Empresa")
                         .WithMany()
-                        .HasForeignKey("Empresaid")
+                        .HasForeignKey("EmpresaId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -537,13 +554,13 @@ namespace SistemaEstoque.API.Migrations
                 {
                     b.HasOne("SistemaEstoque.API.Models.CidadeModel", "Cidade")
                         .WithMany()
-                        .HasForeignKey("Cidadeid")
+                        .HasForeignKey("CidadeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("SistemaEstoque.API.Models.LicencaModel", "Licenca")
                         .WithMany()
-                        .HasForeignKey("Licencaid")
+                        .HasForeignKey("LicencaId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -554,21 +571,35 @@ namespace SistemaEstoque.API.Migrations
 
             modelBuilder.Entity("SistemaEstoque.API.Models.FornecedoresModel", b =>
                 {
-                    b.HasOne("SistemaEstoque.API.Models.UsuarioModel", "usuario")
+                    b.HasOne("SistemaEstoque.API.Models.CidadeModel", "Cidade")
                         .WithMany()
-                        .HasForeignKey("usuarioid")
+                        .HasForeignKey("CidadeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("usuario");
+                    b.HasOne("SistemaEstoque.API.Models.EmpresaModel", "Empresa")
+                        .WithMany()
+                        .HasForeignKey("EmpresaId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Cidade");
+
+                    b.Navigation("Empresa");
                 });
 
             modelBuilder.Entity("SistemaEstoque.API.Models.LoginModel", b =>
                 {
                     b.HasOne("SistemaEstoque.API.Models.ClienteModel", "Cliente")
                         .WithMany()
-                        .HasForeignKey("clienteId")
+                        .HasForeignKey("ClienteId")
                         .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("SistemaEstoque.API.Models.EmpresaModel", "Empresa")
+                        .WithMany()
+                        .HasForeignKey("EmpresaId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("SistemaEstoque.API.Models.UsuarioModel", "Usuario")
                         .WithMany()
@@ -577,6 +608,8 @@ namespace SistemaEstoque.API.Migrations
 
                     b.Navigation("Cliente");
 
+                    b.Navigation("Empresa");
+
                     b.Navigation("Usuario");
                 });
 
@@ -584,13 +617,13 @@ namespace SistemaEstoque.API.Migrations
                 {
                     b.HasOne("SistemaEstoque.API.Models.ClienteModel", "Cliente")
                         .WithMany("Pedidos")
-                        .HasForeignKey("Clienteid")
+                        .HasForeignKey("ClienteId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("SistemaEstoque.API.Models.UsuarioModel", "Usuario")
-                        .WithMany()
-                        .HasForeignKey("Usuarioid")
+                        .WithMany("Pedidos")
+                        .HasForeignKey("UsuarioId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -622,19 +655,19 @@ namespace SistemaEstoque.API.Migrations
                 {
                     b.HasOne("SistemaEstoque.API.Models.EmpresaModel", "Empresa")
                         .WithMany()
-                        .HasForeignKey("Empresaid")
+                        .HasForeignKey("EmpresaId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("SistemaEstoque.API.Models.FornecedoresModel", "Fornecedor")
                         .WithMany()
-                        .HasForeignKey("Fornecedorid")
+                        .HasForeignKey("FornecedorId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("SistemaEstoque.API.Models.TipoProdutoModel", "tipoProduto")
-                        .WithMany()
-                        .HasForeignKey("tipoProdutoid")
+                        .WithMany("Produtos")
+                        .HasForeignKey("TipoProdutoId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -645,17 +678,28 @@ namespace SistemaEstoque.API.Migrations
                     b.Navigation("tipoProduto");
                 });
 
+            modelBuilder.Entity("SistemaEstoque.API.Models.TipoProdutoModel", b =>
+                {
+                    b.HasOne("SistemaEstoque.API.Models.EmpresaModel", "Empresa")
+                        .WithMany()
+                        .HasForeignKey("Empresaid")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Empresa");
+                });
+
             modelBuilder.Entity("SistemaEstoque.API.Models.UsuarioModel", b =>
                 {
                     b.HasOne("SistemaEstoque.API.Models.CidadeModel", "Cidade")
                         .WithMany()
-                        .HasForeignKey("Cidadeid")
+                        .HasForeignKey("CidadeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("SistemaEstoque.API.Models.EmpresaModel", "Empresa")
                         .WithMany()
-                        .HasForeignKey("Empresaid")
+                        .HasForeignKey("EmpresaId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -682,6 +726,16 @@ namespace SistemaEstoque.API.Migrations
             modelBuilder.Entity("SistemaEstoque.API.Models.ProdutoModel", b =>
                 {
                     b.Navigation("pedidos");
+                });
+
+            modelBuilder.Entity("SistemaEstoque.API.Models.TipoProdutoModel", b =>
+                {
+                    b.Navigation("Produtos");
+                });
+
+            modelBuilder.Entity("SistemaEstoque.API.Models.UsuarioModel", b =>
+                {
+                    b.Navigation("Pedidos");
                 });
 #pragma warning restore 612, 618
         }

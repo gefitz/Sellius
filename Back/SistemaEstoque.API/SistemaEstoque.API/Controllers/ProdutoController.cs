@@ -1,8 +1,11 @@
-﻿using SistemaEstoque.API.DTOs;
-using SistemaEstoque.API.Models;
+﻿using SistemaEstoque.API.Models;
 using SistemaEstoque.API.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using SistemaEstoque.API.DTOs.CadastrosDTOs;
+using SistemaEstoque.API.DTOs.TabelasDTOs;
+using SistemaEstoque.API.DTOs;
+using SistemaEstoque.API.DTOs.Filtros;
 
 namespace SistemaEstoque.API.Controllers
 {
@@ -18,7 +21,7 @@ namespace SistemaEstoque.API.Controllers
             _service = service;
         }
         [HttpPost("ObterProduto")]
-        public async Task<IActionResult> ObterProduto(FiltroProduto? produto)
+        public async Task<IActionResult> ObterProduto(PaginacaoTabelaResult<ProdutoDTO,FiltroProduto> produto)
         {
             var response = await _service.FiltrarProduto(produto);
             if (response.success)
@@ -30,42 +33,43 @@ namespace SistemaEstoque.API.Controllers
         [HttpPost("CadastrarProduto")]
         public async Task<IActionResult> CadastrarProduto(ProdutoDTO produtoDTO)
         {
-            ModelState.Remove("TpProduto");
             if (!ModelState.IsValid)
             {
-                return BadRequest();
+                var menssagemErro = string.Join("\n", ModelState.Values.SelectMany(x => x.Errors).Select(e => e.ErrorMessage));
+                return BadRequest(Response<ProdutoDTO>.Failed(menssagemErro));
             }
-
-            if (await _service.CadastrarProduto(produtoDTO))
+            var response = await _service.CadastrarProduto(produtoDTO);
+            if (!response.success)
             {
-                return Ok();
+                return Ok(response);
             }
-            return BadRequest();
+            return BadRequest(response);
         }
         [HttpPut]
         public async Task<IActionResult> UpdateProduto(ProdutoDTO produtoDTO)
         {
-            ModelState.Remove("TpProduto");
             if (!ModelState.IsValid)
             {
-                return BadRequest();
+                var menssagemErro = string.Join("\n", ModelState.Values.SelectMany(x => x.Errors).Select(e => e.ErrorMessage));
+                return BadRequest(Response<ProdutoDTO>.Failed(menssagemErro));
             }
-            if (await _service.Update(produtoDTO))
+            var response = await _service.Update(produtoDTO);
+            if (!response.success)
             {
-                return Ok();
+                return Ok(response);
             }
-
-            return BadRequest();
+            return BadRequest(response);
         }
 
         [HttpDelete]
         public async Task<IActionResult> InativarProduto(int id)
         {
-            if (await _service.InativarProduto(id))
+            var ret = await _service.InativarProduto(id);
+            if (ret.success)
             {
-                return Ok();
+                return Ok(ret);
             }
-            return BadRequest();
+            return BadRequest(ret);
         }
 
     }

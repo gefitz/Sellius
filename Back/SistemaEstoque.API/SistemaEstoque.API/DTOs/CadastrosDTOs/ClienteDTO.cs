@@ -1,6 +1,7 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using SistemaEstoque.API.Models;
+using System.ComponentModel.DataAnnotations;
 
-namespace SistemaEstoque.API.DTOs
+namespace SistemaEstoque.API.DTOs.CadastrosDTOs
 {
     public class ClienteDTO
     {
@@ -12,7 +13,7 @@ namespace SistemaEstoque.API.DTOs
         [RegularExpression(@"\d+$")]
         public string Documento { get; set; }
 
-        public CidadeDTO Cidade { get; set; }
+        public int  CidadeId { get; set; }
 
         [Required(ErrorMessage = "Rua e obrigatorio")]
         public string Rua { get; set; }
@@ -27,7 +28,6 @@ namespace SistemaEstoque.API.DTOs
         [DataType(DataType.Date)]
         [Display(Name ="Data Nascimento")]
         public DateTime dthNascimeto { get; set; }
-        public List<PedidoDTO>? Pedidos { get; set; }
 
         [Required(ErrorMessage = "Email e obrigatorio")]
         [EmailAddress(ErrorMessage ="E-mail invalido")]
@@ -37,5 +37,36 @@ namespace SistemaEstoque.API.DTOs
         [DisplayFormat(DataFormatString = "{0:(##)#####-####}", ApplyFormatInEditMode = true)]
         [RegularExpression(@"\d+$")]
         public string Telefone { get; set; }
+        public int EmpresaId { get; set; }
+        public short fAtivo { get; set; }
+
+        public static implicit operator  ClienteDTO(ClienteModel dto)
+        {
+            return new ClienteDTO
+            {
+                id = dto.id,
+                Bairro = dto.Bairro,
+                CEP = dto.Cep,
+                Telefone = dto.Telefone,
+                Email = dto.Email,
+                CidadeId = dto.CidadeId,
+                Documento = dto.Documento,
+                dthNascimeto = dto.dthNascimeto,
+                EmpresaId = dto.EmpresaId,
+                fAtivo = dto.fAtivo,
+                Nome = dto.Nome,
+                //Pedidos = dto.Pedidos,
+                Rua = dto.Rua,
+            };
+        }
+        public static List<ClienteDTO> FromToList(List<ClienteModel> list)
+        {
+            List<ClienteDTO> dto = new List<ClienteDTO>();
+            for (int i = 0; i < list.Count; i++)
+            {
+                dto.Add(list[i]);
+            }
+            return dto;
+        }
     }
 }

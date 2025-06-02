@@ -1,49 +1,79 @@
 ﻿using AutoMapper;
 using SistemaEstoque.API.DTOs;
+using SistemaEstoque.API.DTOs.CadastrosDTOs;
+using SistemaEstoque.API.DTOs.TabelasDTOs;
 using SistemaEstoque.API.Models;
 using SistemaEstoque.API.Repository.Interfaces;
+using SistemaEstoque.API.Repository.Produto.Interface;
 
 namespace SistemaEstoque.API.Services
 {
     public class TpProdutoService
     {
-        private readonly IDbMethods<TipoProdutoModel> _repository;
-        private readonly IMapper _mapper;
+        private readonly ITpProdutoRepository _repository;
 
-        public TpProdutoService(IDbMethods<TipoProdutoModel> repository, IMapper mapper)
+        public TpProdutoService(ITpProdutoRepository repository, IMapper mapper)
         {
             _repository = repository;
-            _mapper = mapper;
         }
-        public async Task<bool> CadastrarTpProduto(TipoProdutoDTO clienteDTO)
+        public async Task<Response<TipoProdutoDTO>> CadastrarTpProduto(TipoProdutoDTO dto)
         {
-            TipoProdutoModel cliente = _mapper.Map<TipoProdutoModel>(clienteDTO);
-            if (await _repository.Create(cliente))
-                return true;
-            return false;
+            TipoProdutoDTO model = dto;
+            if (await _repository.Create(model))
+                return Response<TipoProdutoDTO>.Ok(model);
+            return Response<TipoProdutoDTO>.Failed("Falha ao criar um novo tipo produto");
 
         }
-        public async Task<IEnumerable<TipoProdutoDTO>> BuscarTpProudo(TipoProdutoDTO? clienteDTO)
+        public async Task<Response<PaginacaoTabelaResult<TipoProdutoDTO, TipoProdutoDTO>>> BuscarTpProudo(PaginacaoTabelaResult<TipoProdutoDTO, TipoProdutoDTO> dto)
         {
-            TipoProdutoModel tipoProduto = new TipoProdutoModel();
-            if (clienteDTO != null) { tipoProduto = _mapper.Map<TipoProdutoModel>(clienteDTO); }
-            return _mapper.Map<IEnumerable<TipoProdutoDTO>>(await _repository.Filtrar(tipoProduto));
-        }
-        public async Task<TipoProdutoDTO> BuscarId(int id)
-        {
-            TipoProdutoModel cliente = new TipoProdutoModel { id = id };
-            return _mapper.Map<TipoProdutoDTO>(await _repository.BuscaDireto(cliente));
-        }
-        public async Task<bool> UpdateTpProduto(TipoProdutoDTO clienteDTO)
-        {
-            TipoProdutoModel cliente = _mapper.Map<TipoProdutoModel>(clienteDTO);
-            return await _repository.Update(cliente);
-        }
-        public async Task<bool> InativarTpProduto(int id)
-        {
-            TipoProdutoModel cliente = new TipoProdutoModel() { id = id };
-            return await _repository.Delete(cliente);
-        }
+            try
+            {
 
+                PaginacaoTabelaResult<TipoProdutoModel, TipoProdutoModel> model = new PaginacaoTabelaResult<TipoProdutoModel, TipoProdutoModel>
+                {
+                    TotalRegistros = dto.TotalRegistros,
+                    TotalPaginas = dto.TotalPaginas,
+                    TamanhoPagina = dto.TamanhoPagina,
+                    Filtro = dto.Filtro,
+                    PaginaAtual = dto.PaginaAtual
+
+                };
+                var result = await _repository.Filtrar(model);
+                dto.Dados = TipoProdutoDTO.FromList(result.Dados);
+                return Response<PaginacaoTabelaResult<TipoProdutoDTO, TipoProdutoDTO>>.Ok(dto);
+            }
+            catch (Exception ex)
+            {
+                return Response<PaginacaoTabelaResult<TipoProdutoDTO, TipoProdutoDTO>>.Failed(ex.Message);
+            }
+        }
+        public async Task<Response<TipoProdutoDTO>> BuscarId(int id)
+        {
+            try
+            {
+
+                TipoProdutoModel cliente = new TipoProdutoModel { id = id };
+                return Response<TipoProdutoDTO>.Ok(await _repository.BuscaDireto(cliente));
+            }
+            catch (Exception ex)
+            {
+                return Response<TipoProdutoDTO>.Failed(ex.Message);
+            }
+        }
+        public async Task<Response<TipoProdutoDTO>> UpdateTpProduto(TipoProdutoDTO dto)
+        {
+            TipoProdutoModel model = dto;
+            if(await _repository.Update(model))
+                return Response<TipoProdutoDTO>.Ok(model);
+            return Response<TipoProdutoDTO>.Failed("Falha ao fazer modificação");
+        }
+        public async Task<Response<TipoProdutoDTO>> InativarTpProduto(TipoProdutoDTO dto)
+        {
+            var model = await BuscarId(dto.id);
+            if (!model.success) {
+                return Response<TipoProdutoDTO>.Failed("O id desse tipo produto não foi encontrado");
+            }
+            return await UpdateTpProduto(dto);
+        }
     }
 }

@@ -1,14 +1,16 @@
-﻿using SistemaEstoque.API.DTOs;
-using SistemaEstoque.API.Models;
-using SistemaEstoque.API.Services;
+﻿using SistemaEstoque.API.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
-using System.Text;
+using SistemaEstoque.API.DTOs.CadastrosDTOs;
+using SistemaEstoque.API.DTOs.TabelasDTOs;
+using SistemaEstoque.API.DTOs;
+using SistemaEstoque.API.DTOs.Filtros;
 
 namespace SistemaEstoque.API.Controllers
 {
     [Authorize]
+    [ApiController]
+    [Route("/api/[controller]")]
     public class ClienteController : Controller
     {
         private readonly ClienteService _service;
@@ -17,61 +19,65 @@ namespace SistemaEstoque.API.Controllers
         {
             _service = service;
         }
-        [HttpGet]
-        public async Task<IActionResult> Index()
+        [HttpPost("obterClientes")]
+        [Authorize(Roles ="Funcionario,Adm,Gerente")]
+        public async Task<IActionResult> ObterClientes([FromBody] PaginacaoTabelaResult<ClienteDTO, FiltroCliente> clienteDTO)
         {
-            return View();
-        }
-        [HttpPost]
-        public async Task<IActionResult> ObterClientes([FromBody]ClienteDTO clienteDTO)
-        {
-            IEnumerable<ClienteDTO> ret = await _service.BuscarClientes(clienteDTO);
-            if (ret.Count() == 0)
+
+            var ret = await _service.BuscarClientes(clienteDTO);
+            if (!ret.success)
             {
-                return BadRequest();
+                return BadRequest(ret);
             }
             return Ok(ret);
         }
-        public async Task<IActionResult> Cadastrar(int? id)
-        {
-            ClienteDTO cliente = new ClienteDTO();
-            if (id != 0 && id != null)
-            {
-                cliente = await _service.BuscarId((int)id);
-            }
-            return View(cliente);
-        }
         [HttpPost]
+        [Authorize(Roles ="Funcionario,Adm,Gerente")]
         public async Task<IActionResult> Cadastrar(ClienteDTO cliente)
         {
-            var teste  = new StreamReader(HttpContext.Request.Body, Encoding.UTF8,leaveOpen:true);
-            var body = await teste.ReadLineAsync();
 
-            ModelState.Remove("Pedidos");
-            if (!ModelState.IsValid)
-            {
-                return BadRequest();
-            }
-            if (cliente.id != 0)
-            {
-                if (await _service.UpdateCliente(cliente)) { return Ok(); }
-            }
-            else
-            {
-                var response = await _service.CadastrarCliente(cliente);
-                if (response.success)
-                     return Ok(response); 
-            }
-            return BadRequest(Response);
+
+                if (!ModelState.IsValid)
+                {
+                    var menssagemErro = string.Join("\n", ModelState.Values.SelectMany(x => x.Errors).Select(e => e.ErrorMessage));
+                    return BadRequest(Response<ClienteDTO>.Failed(menssagemErro));
+                }
+
+
+            var response = await _service.CadastrarCliente(cliente);
+            if (response.success)
+                return Ok(response);
+
+            return BadRequest(response);
 
         }
+        [HttpDelete]
+        [Authorize(Roles = "Funcionario,Adm,Gerente")]
         public async Task<IActionResult> InativarCliente(int id)
         {
-            if(await _service.InativarCliente(id))
+            var ret = await _service.InativarCliente(id);
+            if (ret.success)
             {
-                return Ok();
+                return Ok(ret);
             }
-            return BadRequest();
+            return BadRequest(ret);
+
+        }
+        [HttpPut]
+        [Authorize(Roles = "Funcionario,Adm,Gerente")]
+        public async Task<IActionResult> UpdateCliente(ClienteDTO cliente)
+        {
+            if (!ModelState.IsValid)
+            {
+                var menssagemErro = string.Join("\n", ModelState.Values.SelectMany(x => x.Errors).Select(e => e.ErrorMessage));
+                return BadRequest(Response<ClienteDTO>.Failed(menssagemErro));
+            }
+            var ret = await _service.UpdateCliente(cliente);
+            if (ret.success)
+            {
+                return Ok(ret);
+            }
+            return BadRequest(ret);
 
         }
 

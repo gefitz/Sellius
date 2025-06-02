@@ -1,11 +1,16 @@
-﻿using SistemaEstoque.API.DTOs;
-using SistemaEstoque.API.Models;
+﻿using SistemaEstoque.API.Models;
 using SistemaEstoque.API.Services;
 using Microsoft.AspNetCore.Mvc;
 using System.Text;
-
+using SistemaEstoque.API.DTOs.CadastrosDTOs;
+using SistemaEstoque.API.DTOs;
+using SistemaEstoque.API.DTOs.TabelasDTOs;
+using Microsoft.AspNetCore.Authorization;
 namespace SistemaEstoque.API.Controllers
 {
+    [ApiController]
+    [Route("/api/[controller]")]
+    [Authorize]
     public class TpProdutoController : Controller
     {
         private readonly TpProdutoService _service;
@@ -14,60 +19,54 @@ namespace SistemaEstoque.API.Controllers
         {
             _service = service;
         }
-
-        [HttpGet]
-        public async Task<IActionResult> Index()
+        [HttpPost("ObterTabelaTpProduto")]
+        public async Task<IActionResult> ObterTpProduto(PaginacaoTabelaResult<TipoProdutoDTO, TipoProdutoDTO> tipoProdutoDTO)
         {
-            IEnumerable<TipoProdutoDTO> tpProduto = await _service.BuscarTpProudo(new TipoProdutoDTO());
-            if (tpProduto.Count() == 0)
+            var ret = await _service.BuscarTpProudo(tipoProdutoDTO);
+            if (!ret.success)
             {
-                return BadRequest();
-            }
-            ViewBag.TpProduto = tpProduto;
-            return View();
-        }
-        [HttpPost]
-        public async Task<IActionResult> ObterTpProduto([FromBody]TipoProdutoDTO tipoProdutoDTO)
-        {
-            ModelState.Remove("TpProduto");
-            ModelState.Remove("Descricao");
-            IEnumerable<TipoProdutoDTO> ret = await _service.BuscarTpProudo(tipoProdutoDTO);
-            if (ret.Count() == 0)
-            {
-                return BadRequest();
+                return BadRequest(ret);
             }
             return Ok(ret);
         }
-        [HttpPost]
-        public async Task<IActionResult> CadastrarTpProduto([FromBody]TipoProdutoDTO tipoProduto)
+        [HttpPost("NovoTpProduto")]
+        public async Task<IActionResult> CadastrarTpProduto([FromBody] TipoProdutoDTO tipoProduto)
         {
-            var teste = new StreamReader(HttpContext.Request.Body, Encoding.UTF8, leaveOpen: true);
-            var body = await teste.ReadToEndAsync();
-            ModelState.Remove("Id");
             if (!ModelState.IsValid)
             {
-                return BadRequest();
+                var menssagemErro = string.Join("\n", ModelState.Values.SelectMany(x => x.Errors).Select(e => e.ErrorMessage));
+                return BadRequest(Response<TipoProdutoDTO>.Failed(menssagemErro));
             }
-            if (tipoProduto.id != 0)
-            {
-                if (await _service.UpdateTpProduto(tipoProduto)) { return Ok(); }
-            }
-            else
-            {
-                if (await _service.CadastrarTpProduto(tipoProduto)) { return Ok(); }
-            }
-            return BadRequest();
+            var ret = await _service.CadastrarTpProduto(tipoProduto);
+            if (ret.success) { return Ok(ret); }
+            return BadRequest(ret);
 
 
         }
-        public async Task<IActionResult> InativarTpProduto(int id)
+        [HttpPut]
+        public async Task<IActionResult> UpdateTpProduto(TipoProdutoDTO dto)
         {
-            if (await _service.InativarTpProduto(id))
+            if (!ModelState.IsValid)
             {
-                return Ok();
+                var menssagemErro = string.Join("\n", ModelState.Values.SelectMany(x => x.Errors).Select(e => e.ErrorMessage));
+                return BadRequest(Response<TipoProdutoDTO>.Failed(menssagemErro));
+            }
+            var result = await _service.UpdateTpProduto(dto);
+            if (result.success) { return Ok(result); }
+            return BadRequest(result);
+        }
+        [HttpDelete]
+        public async Task<IActionResult> InativarTpProduto(TipoProdutoDTO dto)
+        {
+
+
+            var result = await _service.InativarTpProduto(dto);
+            if (result.success)
+            {
+                return Ok(result);
             }
             //ViewBag.Error = _log.Messagem;
-            return BadRequest();
+            return BadRequest(result);
 
         }
     }

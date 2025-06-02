@@ -1,47 +1,36 @@
 ﻿using AutoMapper;
 using SistemaEstoque.API.DTOs;
+using SistemaEstoque.API.DTOs.CadastrosDTOs;
+using SistemaEstoque.API.DTOs.TabelasDTOs;
 using SistemaEstoque.API.Models;
-using SistemaEstoque.API.Repository;
 using SistemaEstoque.API.Repository.Interfaces;
+using SistemaEstoque.API.Repository.Usuarios.Interfaces;
 
 namespace SistemaEstoque.API.Services
 {
     public class UsuarioService
     {
-        private readonly IDbMethods<UsuarioModel> _repository;
-        private readonly IMapper _mapper;
-        private readonly LoginService _login;
+        private readonly IUsuario _repository;
 
-        public UsuarioService(IDbMethods<UsuarioModel> repository, IMapper mapper, LoginService login)
+        public UsuarioService(IUsuario repository)
         {
             _repository = repository;
-            _mapper = mapper;
-            _login = login;
         }
         public async Task<Response<UsuarioDTO>> CriarUsuario(UsuarioDTO dTO)
         {
             try
             {
 
-                UsuarioModel usuario = _mapper.Map<UsuarioModel>(dTO);
-                var vereficaUsuario = await _repository.BuscaDireto(usuario);
-                if(vereficaUsuario != null) { return Response<UsuarioDTO>.Failed("Email já esta sendo utilizado"); }
-                Dictionary<string, byte[]> hashSalt = _login.CriptografiaSenha(dTO.Password);
-                if (hashSalt.Count == 0) { return Response<UsuarioDTO>.Failed("Falha ao criptografar a senha"); }
-                usuario.Salt = hashSalt["salt"];
-                usuario.Hash = hashSalt["hash"];
-                if(await _repository.Create(usuario))
-                {
+                UsuarioModel usuario = dTO;
+                if (await VereficaExistenciaUsuario(dTO)) { return Response<UsuarioDTO>.Failed("Email já esta sendo utilizado"); }
 
-                return Response<UsuarioDTO>.Ok();
+                if (await _repository.Create(usuario))
+                {
+                    dTO = usuario;
+                    return Response<UsuarioDTO>.Ok(dTO);
                 }
                 return Response<UsuarioDTO>.Failed("Falha ao cadastrar usuario");
             }
-            catch (ApplicationException ex)
-            {
-                return Response<UsuarioDTO>.Failed(ex.Message);
-            }
-
             catch (Exception ex)
             {
                 return Response<UsuarioDTO>.Failed(ex.Message);
@@ -49,14 +38,86 @@ namespace SistemaEstoque.API.Services
             }
 
         }
-        public async Task<Response<string>> LoginAutenticacao(LoginDTO usuarioDTO)
+        public async Task<bool> VereficaExistenciaUsuario(UsuarioDTO dto)
         {
-            var usuario = _mapper.Map<UsuarioModel>(usuarioDTO);
-            var retornoUsuario = await _repository.BuscaDireto(usuario);
-            if (retornoUsuario == null) { return Response<string>.Failed("Email invalidado"); }
-            if (!await _login.ValidaSenha(retornoUsuario, usuarioDTO.Password)) { return Response<string>.Failed("Senha incorreta"); }
-            return await _login.GerarCookie(retornoUsuario);
+            UsuarioModel usiario = await _repository.BuscaDireto(dto);
+            if (usiario != null)
+                return true;
+            return false;
+        }
 
+        public async Task<Response<UsuarioDTO>> UpdateUsuario(UsuarioDTO usuario)
+        {
+            try
+            {
+                UsuarioModel model = usuario;
+                if (await _repository.Update(model))
+                {
+                    return Response<UsuarioDTO>.Ok(model);
+                }
+                return Response<UsuarioDTO>.Failed("Falha ao tentar fazer upadte no usuario");
+            }
+            catch (Exception ex)
+            {
+                return Response<UsuarioDTO>.Failed(ex.Message);
+            }
+        }
+
+        public async Task<Response<UsuarioDTO>> BuscaDiretoUsuario(int id)
+        {
+            try
+            {
+                UsuarioModel usuario = new UsuarioModel { id = id };
+                usuario = await _repository.BuscaDireto(usuario);
+                if (usuario != null)
+                    return Response<UsuarioDTO>.Ok(usuario);
+                return Response<UsuarioDTO>.Failed("Usuario não localizado");
+            }
+            catch (Exception ex)
+            {
+                return Response<UsuarioDTO>.Failed(ex.Message);
+            }
+        }
+        public async Task<Response<UsuarioDTO>> InativarUsuario(int id)
+        {
+            try
+            {
+                var retBuscarUsuario = await BuscaDiretoUsuario(id);
+                if (!retBuscarUsuario.success)
+                    return retBuscarUsuario;
+                retBuscarUsuario.Data.fAtivo = 0;
+                return await UpdateUsuario(retBuscarUsuario.Data);
+            }
+
+            catch (Exception ex)
+            {
+                return Response<UsuarioDTO>.Failed(ex.Message);
+            }
+        }
+
+        public async Task<Response<PaginacaoTabelaResult<UsuarioDTO, UsuarioDTO>>> ObterTodosUsuarios(PaginacaoTabelaResult<UsuarioDTO, UsuarioDTO> paginacao)
+        {
+            try
+            {
+
+                PaginacaoTabelaResult<UsuarioModel, UsuarioModel> modelPaginacao = new PaginacaoTabelaResult<UsuarioModel, UsuarioModel>
+                {
+                    Filtro = paginacao.Filtro,
+                    PaginaAtual = paginacao.PaginaAtual,
+                    TamanhoPagina = paginacao.TamanhoPagina,
+                    TotalPaginas = paginacao.TotalPaginas,
+                    TotalRegistros = paginacao.TotalRegistros,
+                };
+                modelPaginacao = await _repository.Filtrar(modelPaginacao);
+                
+                paginacao.Dados = UsuarioDTO.FromList(modelPaginacao.Dados);
+
+                return Response<PaginacaoTabelaResult<UsuarioDTO, UsuarioDTO>>.Ok(paginacao);
+            }
+            catch (Exception ex)
+            {
+                return Response<PaginacaoTabelaResult<UsuarioDTO, UsuarioDTO>>.Failed(ex.Message);
+            }
         }
     }
 }
