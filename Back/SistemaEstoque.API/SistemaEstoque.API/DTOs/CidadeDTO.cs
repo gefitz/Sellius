@@ -20,6 +20,15 @@ namespace SistemaEstoque.API.DTOs
                 Estado = cidade.Estado
             };
         }
+        public static List<CidadeDTO> toList(IEnumerable<CidadeModel> cidades)
+        {
+            List<CidadeDTO> cidadeDTOs = new List<CidadeDTO>();
+            foreach (var cidade in cidades)
+            {
+                cidadeDTOs.Add(cidade);
+            }
+            return cidadeDTOs;
+        }
 
     }
 }

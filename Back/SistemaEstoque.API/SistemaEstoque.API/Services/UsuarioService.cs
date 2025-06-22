@@ -23,7 +23,6 @@ namespace SistemaEstoque.API.Services
 
                 UsuarioModel usuario = dTO;
                 if (await VereficaExistenciaUsuario(dTO)) { return Response<UsuarioDTO>.Failed("Email já esta sendo utilizado"); }
-
                 if (await _repository.Create(usuario))
                 {
                     dTO = usuario;

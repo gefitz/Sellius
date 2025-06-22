@@ -23,6 +23,7 @@ using SistemaEstoque.API.Repository.Empresa;
 using SistemaEstoque.API.Repository.Usuarios;
 using SistemaEstoque.API.Repository.Usuarios.Interfaces;
 using SistemaEstoque.API.Repository.Empresa.Interface;
+using SistemaEstoque.API.Repository.CidadeEstado;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -59,6 +60,8 @@ builder.Services.AddScoped<ILogin, LoginRepository>();
 builder.Services.AddScoped<IDbMethods<LicencaModel>, LicencaRepository>();
 builder.Services.AddScoped<IFornecedorRepository, FornecedorRepository>();
 builder.Services.AddScoped<LogRepository>();
+builder.Services.AddScoped<IDbMethods<EstadoModel>, EstadoRespository>();
+builder.Services.AddScoped<IDbMethods<CidadeModel>, CidadeRepository>();
 #endregion
 
 #region Services
@@ -72,6 +75,7 @@ builder.Services.AddScoped<EmpresaService>();
 builder.Services.AddScoped<LicencaService>();
 builder.Services.AddScoped<FornecedorService>();
 builder.Services.AddTransient<TokenService>();
+builder.Services.AddScoped<CidadeEstadoService>();
 #endregion
 
 builder.Services.AddControllers();

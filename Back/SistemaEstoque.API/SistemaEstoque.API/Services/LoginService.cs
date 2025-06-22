@@ -34,7 +34,8 @@ namespace SistemaEstoque.API.Services
         {
             LoginModel model = login;
             model.usuarioId = usuario.id;
-
+            model.EmpresaId = (int)usuario.EmpresaId;
+            model.TipoUsuario = usuario.TipoUsuario;
            CriptografiaSenha(login.Password,model);
 
             if (await _repository.Create(model))

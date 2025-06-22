@@ -2,6 +2,7 @@
 using SistemaEstoque.API.DTOs;
 using SistemaEstoque.API.DTOs.CadastrosDTOs;
 using SistemaEstoque.API.DTOs.TabelasDTOs;
+using SistemaEstoque.API.Enums;
 using SistemaEstoque.API.Models;
 using SistemaEstoque.API.Repository.Empresa.Interface;
 using SistemaEstoque.API.Repository.Interfaces;
@@ -40,12 +41,15 @@ namespace SistemaEstoque.API.Services
                     #region Criação da empresa
                     #region Gerar Licenca
                     //Gera a licenca da empresa e retorna o id da licenca
-                    int idLicenca = await _licenca.GerarLicenca(empresa.Empresa.TipoLicenca);
+                    int idLicenca = await _licenca.GerarLicenca((TipoLicenca)empresa.Empresa.TipoLicenca);
 
                     if (idLicenca == 0)
                         return Response<string>.Failed("Falha ao gerar a licenca da empresa");
 
                     emp.LicencaId = idLicenca;
+                    emp.dthAlteracao = DateTime.Now;
+                    emp.dthCadastro = DateTime.Now;
+                    emp.fAtivo = 1;
                     #endregion
                     if (await VereficaExistenciaEmpresa(empresa.Empresa))
                         return Response<string>.Failed("Empresa com esse cnpj ja está cadastrada");
@@ -65,6 +69,7 @@ namespace SistemaEstoque.API.Services
                         return Response<string>.Failed(responseUsuario.errorMessage);
 
                     #region Criacao do login do admin
+                    
                     token = await _loginService.CriarLogin(empresa.Login, responseUsuario.Data);
                     if (token == null || !token.success)
 

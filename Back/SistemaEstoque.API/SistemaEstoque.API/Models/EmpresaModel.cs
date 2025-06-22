@@ -31,8 +31,8 @@ namespace SistemaEstoque.API.Models
                 Rua = dto.Rua,
                 CidadeId = dto.CidadeId,
                 CEP = dto.CEP,
-                dthAlteracao = dto.dthAlteracao,
-                dthCadastro = dto.dthCadastro,
+                dthAlteracao = (DateTime)dto.dthAlteracao,
+                dthCadastro = (DateTime)dto.dthCadastro,
                 fAtivo = dto.fAtivo
             };
         }

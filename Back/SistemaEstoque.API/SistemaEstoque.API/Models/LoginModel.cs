@@ -11,9 +11,9 @@ namespace SistemaEstoque.API.Models
         public byte[] Salt { get; set; }
         public bool fEmailConfirmado { get; set; } = false;
         public TipoUsuario TipoUsuario { get; set; } = 0;
-        public int? usuarioId { get; set; }
+        public int? usuarioId { get; set; } = 0;
         public UsuarioModel? Usuario { get; set; }
-        public int? ClienteId { get; set; }
+        public int? ClienteId { get; set; } = 0;
         public ClienteModel? Cliente { get; set; }
         public int EmpresaId { get; set; }
         public EmpresaModel Empresa { get; set; }
@@ -23,9 +23,9 @@ namespace SistemaEstoque.API.Models
             return new LoginModel
             {
                 Email = dto.Email,
-                ClienteId = dto.ClienteId,
-                usuarioId = dto.usuarioId,
-                EmpresaId = dto.EmpresaId
+                //ClienteId = dto.ClienteId,
+                //usuarioId = dto.usuarioId,
+                //EmpresaId = dto.EmpresaId
             };
         }
     }
