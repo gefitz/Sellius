@@ -1,10 +1,4 @@
 import { Routes } from '@angular/router';
-import { HomeComponent } from './pages/home/components/home/home.component';
-import { ProtudosListComponent } from './pages/produtos/components/produtos-list/protudos-list/protudos-list.component';
-import { ProdutoCadastroComponent } from './pages/produtos/components/produtos-cadastro/produto-cadastro/produto-cadastro.component';
-import { ClientesListComponent } from './pages/clientes/components/clientes-list/clientes-list.component';
-import { PedidosComponent } from './pages/pedido/components/pedidos/pedidos.component';
-import { ClientesCadastroComponent } from './pages/clientes/components/clientes-cadastro/clientes-cadastro.component';
 import { ClienteRoutes } from './pages/clientes/cliente.routes';
 import { ProdutoRoutes } from './pages/produtos/produto.routes';
 import { PedidoRoutes } from './pages/pedido/pedido.routes';
@@ -14,13 +8,18 @@ import { AuthenticationComponent } from './shared/authentication/authentication.
 import { LoginComponent } from './pages/login/components/login/login.component';
 import { AuthGuardService } from './core/auth-guard.service';
 import { Usuarioroutes } from './pages/usuario/usario.routes';
-import { title } from 'process';
+import { Empresaroutes } from './pages/empresa/empresa.route';
 
 export const routes: Routes = [
   {
     path: '',
     component: SidenavComponent,
-    children: [...ClienteRoutes, ...ProdutoRoutes, ...PedidoRoutes],
+    children: [
+      ...ClienteRoutes,
+      ...ProdutoRoutes,
+      ...PedidoRoutes,
+      ...Usuarioroutes,
+    ],
     canActivate: [AuthGuardService],
   },
   {
@@ -32,7 +31,7 @@ export const routes: Routes = [
         component: LoginComponent,
         data: { title: 'Entrar / Login no Sistema' },
       },
-      ...Usuarioroutes,
+      ...Empresaroutes,
     ],
   },
   { path: '**', redirectTo: 'Login' },

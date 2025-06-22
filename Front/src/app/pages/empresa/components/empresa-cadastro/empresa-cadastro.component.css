@@ -7,16 +7,28 @@ form{
   flex-wrap: wrap;
   gap: 1rem;
   justify-content: center;
-  width: 100%;
 }
 .container-btn{
-  width: 100%; /* Botão ocupa uma linha inteira */
   display: flex;
   justify-content: flex-end; /* Alinha o botão para esquerda */
   margin-right: 2rem;
 }
 button{
   margin: 5px;
+}
+.btn-cadastro {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px; /* espaçamento entre texto e ícone */
+}
+
+.icone-direita {
+  order: 2;
+}
+
+.texto-botao {
+  order: 1;
 }
 @media(max-width:770px){
   mat-form-field{
