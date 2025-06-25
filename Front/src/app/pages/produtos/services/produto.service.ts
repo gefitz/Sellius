@@ -7,37 +7,42 @@ import { AuthGuardService } from '../../../core/auth-guard.service';
 import { ResponseApiModel } from '../../../core/model/ResponseApi.model';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ProdutoFiltro } from '../models/produtoFiltro.model';
+import { ApiService } from '../../../core/services/Api/api.service';
+import { Paginacao } from '../../../core/model/paginacao.mode';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ProdutoService {
-  private apiUrl = environment.apiUrl + '/Produto';
+  private apiUrl = '/Produto';
   constructor(
     private http: HttpClient,
     private cookie: AuthGuardService,
-    private snack: MatSnackBar
+    private snack: MatSnackBar,
+    private api: ApiService
   ) {}
 
-  listProduto(produto: ProdutoFiltro): Observable<ProdutoModel[]> {
-    return this.http
-      .post<ResponseApiModel<ProdutoModel[]>>(
+  listProduto(
+    produto: Paginacao<ProdutoModel, ProdutoFiltro>
+  ): Paginacao<ProdutoModel, ProdutoFiltro> {
+    this.api
+      .post<Paginacao<ProdutoModel, ProdutoFiltro>>(
         this.apiUrl + '/ObterProduto',
-        produto,
-        {
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        }
-      )
-      .pipe(map((resp) => resp.data));
-  }
-  async cadastrarProduto(produto: ProdutoModel) {
-    await this.http
-      .post<ResponseApiModel<ProdutoModel>>(
-        this.apiUrl + '/CadastrarProduto',
         produto
       )
+      .subscribe({
+        next: (ret) => {
+          produto = ret.data;
+        },
+        error: (ret) => {
+          this.snack.open(ret.errorMessage, 'Ok', { duration: 5000 });
+        },
+      });
+    return produto;
+  }
+  async cadastrarProduto(produto: ProdutoModel) {
+    await this.api
+      .post<ProdutoModel>(this.apiUrl + '/CadastrarProduto', produto)
       .subscribe({
         next: (response) => {
           if (response.success) {
@@ -48,7 +53,7 @@ export class ProdutoService {
           }
         },
         error: (response) => {
-          this.snack.open('Falha ao cadastrar o produto', 'Ok');
+          this.snack.open(response.errorMessage, 'Ok');
         },
       });
   }

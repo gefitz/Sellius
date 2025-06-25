@@ -1,7 +1,11 @@
 import { AfterViewInit, Component, ViewChild } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIcon, MatIconModule } from '@angular/material/icon';
-import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
+import {
+  MatPaginator,
+  MatPaginatorIntl,
+  MatPaginatorModule,
+} from '@angular/material/paginator';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { Router, RouterLink } from '@angular/router';
 import { ProdutoModel } from '../../../models/produto.model';
@@ -14,6 +18,8 @@ import { EtiquetaModel } from '../../../models/etiqueta.model';
 import { ProdutoService } from '../../../services/produto.service';
 import { ProdutoFiltro } from '../../../models/produtoFiltro.model';
 import { error } from 'console';
+import { CustomPaginator } from '../../../../../core/services/Utils/paginator-edit';
+import { Paginacao } from '../../../../../core/model/paginacao.mode';
 @Component({
   selector: 'app-protudos-list',
   standalone: true,
@@ -26,6 +32,12 @@ import { error } from 'console';
     MatButtonModule,
     MatIconModule,
     CommonModule,
+  ],
+  providers: [
+    {
+      provide: MatPaginatorIntl,
+      useFactory: CustomPaginator,
+    },
   ],
   templateUrl: './protudos-list.component.html',
   styleUrl: './protudos-list.component.css',
@@ -41,6 +53,10 @@ export class ProtudosListComponent implements AfterViewInit {
     'qtd',
     'dthCadastro',
   ];
+  paginacaoProduto: Paginacao<ProdutoModel, ProdutoFiltro> = new Paginacao<
+    ProdutoModel,
+    ProdutoFiltro
+  >();
   dataSource!: MatTableDataSource<ProdutoModel>;
   produtoFiltro!: ProdutoFiltro;
   @ViewChild(MatPaginator) paginator!: MatPaginator;
@@ -51,6 +67,7 @@ export class ProtudosListComponent implements AfterViewInit {
     private service: ProdutoService,
     private pipe: DatePipe
   ) {
+    this.carregFiltro(this.produtoFiltro);
     this.carregarProduto();
     this._pipe = pipe;
   }
@@ -96,12 +113,29 @@ export class ProtudosListComponent implements AfterViewInit {
     });
   }
   async carregarProduto() {
-    this.service.listProduto(this.produtoFiltro).subscribe({
-      next: (produtoList) => {
-        this.dataSource = new MatTableDataSource<ProdutoModel>(produtoList);
-        console.log(produtoList);
-      },
-      error: (resp) => {},
-    });
+    // this.service.listProduto(this.produtoFiltro).subscribe({
+    //   next: (produtoList) => {
+    //     this.dataSource = new MatTableDataSource<ProdutoModel>(produtoList);
+    //     console.log(produtoList);
+    //   },
+    //   error: (resp) => {},
+    // });
+    this.paginacaoProduto.filtro = this.produtoFiltro;
+    console.log(this.paginacaoProduto);
+    this.paginacaoProduto = this.service.listProduto(this.paginacaoProduto);
+    this.dataSource = new MatTableDataSource<ProdutoModel>(
+      this.paginacaoProduto.dados
+    );
+  }
+  carregFiltro(filtro: ProdutoFiltro): ProdutoFiltro {
+    if (filtro != null) {
+      this.produtoFiltro = filtro;
+    } else {
+      this.produtoFiltro = {
+        descricao: '',
+        nome: '',
+      };
+    }
+    return this.produtoFiltro;
   }
 }
