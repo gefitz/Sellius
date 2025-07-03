@@ -40,6 +40,7 @@ namespace SistemaEstoque.API.Services
                 };
                 var result = await _repository.Filtrar(model);
                 dto.Dados = TipoProdutoDTO.FromList(result.Dados);
+                dto.TotalRegistros = result.TotalRegistros;
                 return Response<PaginacaoTabelaResult<TipoProdutoDTO, TipoProdutoDTO>>.Ok(dto);
             }
             catch (Exception ex)
@@ -51,9 +52,8 @@ namespace SistemaEstoque.API.Services
         {
             try
             {
-
-                TipoProdutoModel cliente = new TipoProdutoModel { id = id };
-                return Response<TipoProdutoDTO>.Ok(await _repository.BuscaDireto(cliente));
+                TipoProdutoModel tp = new TipoProdutoModel { id = id };
+                return Response<TipoProdutoDTO>.Ok(await _repository.BuscaDireto(tp));
             }
             catch (Exception ex)
             {
@@ -67,13 +67,24 @@ namespace SistemaEstoque.API.Services
                 return Response<TipoProdutoDTO>.Ok(model);
             return Response<TipoProdutoDTO>.Failed("Falha ao fazer modificação");
         }
-        public async Task<Response<TipoProdutoDTO>> InativarTpProduto(TipoProdutoDTO dto)
+        public async Task<Response<TipoProdutoDTO>> InativarTpProduto(int id)
         {
-            var model = await BuscarId(dto.id);
+            var model = await BuscarId(id);
             if (!model.success) {
                 return Response<TipoProdutoDTO>.Failed("O id desse tipo produto não foi encontrado");
             }
-            return await UpdateTpProduto(dto);
+            TipoProdutoModel tp = model.Data;
+            tp.fAtivo = 0;
+            if(await _repository.Delete(tp))
+            {
+                return Response<TipoProdutoDTO>.Ok(tp);
+            }
+            return Response<TipoProdutoDTO>.Failed("Falha ao inativar o tipo produto");
+        }
+        public async Task<Response<List<TipoProdutoDTO>>> CarregarCombo(int idEmpresa)
+        {
+            List<TipoProdutoDTO> listTp = TipoProdutoDTO.FromList(await _repository.CarregarCombo(idEmpresa));
+            return Response<List<TipoProdutoDTO>>.Ok(listTp);
         }
     }
 }

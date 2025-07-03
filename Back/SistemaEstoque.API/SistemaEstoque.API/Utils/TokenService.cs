@@ -66,5 +66,11 @@ namespace SistemaEstoque.API.Utils
             #endregion
 
         }
+
+
+        public static int RecuperaIdEmpresa(ClaimsPrincipal identity)
+        {
+            return Int32.Parse(identity.FindFirst("empresa")?.Value);
+        }
     }
 }

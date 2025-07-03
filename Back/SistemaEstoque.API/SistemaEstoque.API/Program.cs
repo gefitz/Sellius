@@ -24,6 +24,7 @@ using SistemaEstoque.API.Repository.Usuarios;
 using SistemaEstoque.API.Repository.Usuarios.Interfaces;
 using SistemaEstoque.API.Repository.Empresa.Interface;
 using SistemaEstoque.API.Repository.CidadeEstado;
+using Newtonsoft.Json;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -44,7 +45,8 @@ builder.Services.AddCors(opt =>
         {
             build.WithOrigins("http://localhost:4200")
             .AllowAnyHeader()
-            .AllowAnyMethod();
+            .AllowAnyMethod()
+            .AllowCredentials();
         });
 });
 builder.Services.AddAutoMapper(typeof(UsuarioModel));
@@ -94,6 +96,31 @@ builder.Services.AddAuthentication("Bearer")
         ValidIssuer = builder.Configuration["jwt:issuer"],
         ValidAudience = builder.Configuration["jwt:audience"],
         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["jwt:secretkey"]))
+    };
+    opt.Events = new JwtBearerEvents
+    {
+        OnAuthenticationFailed = context =>
+        {
+            context.NoResult();
+            context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+            context.Response.ContentType = "application/json";
+
+            string response =
+                JsonConvert.SerializeObject("The access token provided is not valid.");
+            if (context.Exception.GetType() == typeof(SecurityTokenExpiredException))
+            {
+                context.Response.Headers.Add("Token-Expired", "true");
+                response =
+                    JsonConvert.SerializeObject("Token is experied.");
+            }
+
+            context.Response.WriteAsync(response);
+            return Task.CompletedTask;
+        },
+        OnChallenge = c => {
+            c.HandleResponse();
+            return Task.CompletedTask;
+        }
     };
 }
 );
