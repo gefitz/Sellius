@@ -1,6 +1,6 @@
 export interface ResponseModel<model> {
   success: boolean;
   errorMessage: string;
-  message: String;
+  message: string;
   data: model;
 }

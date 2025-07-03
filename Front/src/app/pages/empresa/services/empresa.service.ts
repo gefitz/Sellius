@@ -19,11 +19,9 @@ export class EmpresaService {
   cadastrarEmpresa(model: CadastroEmpresaModel) {
     this.api.post<string>(this.url + '/cadastroNovaEmpresa', model).subscribe({
       next: (ret) => {
-        this.snack.open('sucesso.', 'Ok', { duration: 3000 });
-        this.cookie.guardaCookieUsuario(ret.data);
+        this.cookie.guardaCookieUsuario(ret);
       },
       error: (ret) => {
-        console.log(ret);
         this.snack.open('Error: ' + ret.errorMessage, 'Ok', {
           duration: 5000,
         });

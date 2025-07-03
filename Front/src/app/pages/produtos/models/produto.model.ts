@@ -1,4 +1,4 @@
-import { TpProdutoModel } from '../../tpProduto/models/tpProduto.model';
+import { TpProdutoModel } from './tpProduto.model';
 
 export interface ProdutoModel {
   id: number;

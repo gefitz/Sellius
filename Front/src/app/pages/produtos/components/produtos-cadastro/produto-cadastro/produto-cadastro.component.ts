@@ -15,6 +15,8 @@ import { FlexLayoutModule } from '@angular/flex-layout';
 import { ProdutoModel } from '../../../models/produto.model';
 import { ProdutoService } from '../../../services/produto.service';
 import { CommonModule } from '@angular/common';
+import { TpProdutoModel } from '../../../models/tpProduto.model';
+import { TpProdutoService } from '../../../services/tp-produto.service';
 
 @Component({
   selector: 'app-produto-cadastro',
@@ -35,21 +37,15 @@ import { CommonModule } from '@angular/common';
 })
 export class ProdutoCadastroComponent {
   produtoForm!: FormGroup;
-  tpProduto = [
-    {
-      id: 1,
-      tipo: 'Cereal',
-      descricao: 'cereal',
-    },
-    {
-      id: 2,
-      tipo: 'Frio',
-      descricao: 'cereal',
-    },
-  ];
-  constructor(private router: Router, private service: ProdutoService) {
+  tpProduto!: TpProdutoModel[];
+  constructor(
+    private router: Router,
+    private service: ProdutoService,
+    private tpService: TpProdutoService
+  ) {
     const nav = router.getCurrentNavigation();
     const produtoEditar: ProdutoModel = nav?.extras.state?.['produto'];
+    this.carregarCombos();
     this.preencherCamposFormulario(produtoEditar);
   }
   salvarProduto() {
@@ -94,5 +90,12 @@ export class ProdutoCadastroComponent {
         valor: new FormControl(0, Validators.required),
       });
     }
+  }
+  carregarCombos() {
+    this.tpService.carregarTpProdutoCombo().subscribe({
+      next: (ret) => {
+        this.tpProduto = ret;
+      },
+    });
   }
 }

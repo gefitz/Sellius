@@ -3,7 +3,7 @@
 }
 
 .sidenav {
-  width: 200px;
+  width: 220px;
   background: #3b7eb9;
   border-top-right-radius: 2px;
 }
@@ -22,7 +22,13 @@
 .container {
   padding: 20px;
 }
-
+.mat-icon-nav-list {
+  margin-right: 8px;
+}
+.menu-expansion {
+  background-color: transparent;
+  box-shadow: none !important;
+}
 .mat-icon-nav-list{
   position: relative;
   top: 5px;

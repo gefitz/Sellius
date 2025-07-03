@@ -32,7 +32,7 @@ export class ProdutoService {
       )
       .subscribe({
         next: (ret) => {
-          produto = ret.data;
+          produto = ret;
         },
         error: (ret) => {
           this.snack.open(ret.errorMessage, 'Ok', { duration: 5000 });
@@ -45,7 +45,7 @@ export class ProdutoService {
       .post<ProdutoModel>(this.apiUrl + '/CadastrarProduto', produto)
       .subscribe({
         next: (response) => {
-          if (response.success) {
+          if (response) {
             this.snack.open('Sucesso ao casdastrar o produto', 'Ok', {
               duration: 1000,
             });

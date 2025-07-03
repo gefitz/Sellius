@@ -20,7 +20,7 @@ import { filter } from 'rxjs';
 import { navItemsModel } from '../../models/navItemsModel.model';
 import { LoginService } from '../../../../pages/login/services/login.service';
 import { AuthGuardService } from '../../../../core/auth-guard.service';
-
+import { MatExpansionModule } from '@angular/material/expansion';
 @Component({
   selector: 'app-sidenav',
   standalone: true,
@@ -36,6 +36,7 @@ import { AuthGuardService } from '../../../../core/auth-guard.service';
     MatTooltipModule,
     RouterLink,
     MatCardModule,
+    MatExpansionModule,
   ],
   templateUrl: './sidenav.component.html',
   styleUrl: './sidenav.component.css',
@@ -43,10 +44,47 @@ import { AuthGuardService } from '../../../../core/auth-guard.service';
 export class SidenavComponent {
   expanded = true;
   navItems: navItemsModel[] = [
-    { icon: 'home', label: 'Início', route: '' },
-    { icon: 'inventory', label: 'Produto', route: '/Produto' },
-    { icon: 'person', label: 'Cliente', route: '/Cliente' },
-    { icon: 'shopping_cart', label: 'Pedido', route: '/Pedido' },
+    {
+      icon: 'home',
+      label: 'Início',
+      route: '',
+      children: [],
+    },
+    {
+      label: 'Anual',
+      icon: 'calendar_today',
+      route: '/relatorios/anual',
+      children: [],
+    },
+    {
+      icon: 'inventory',
+      label: 'Produto',
+      route: '/Produto',
+      children: [
+        {
+          label: 'Produtos',
+          icon: 'inventory',
+          route: '/Produto',
+        },
+        {
+          label: 'Tipo Produto',
+          icon: 'label',
+          route: '/Produto/TpProduto',
+        },
+      ],
+    },
+    {
+      icon: 'person',
+      label: 'Cliente',
+      route: '/Cliente',
+      children: [],
+    },
+    {
+      icon: 'shopping_cart',
+      label: 'Pedido',
+      route: '/Pedido',
+      children: [],
+    },
   ];
   isMobile = false;
   titulo: string = '';
