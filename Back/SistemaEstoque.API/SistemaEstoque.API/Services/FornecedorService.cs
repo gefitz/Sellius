@@ -16,6 +16,7 @@ namespace SistemaEstoque.API.Services
         }
         public async Task<Response<FornecedorDTO>> CadastrarFornecedor(FornecedorDTO dto)
         {
+            dto.fAtivo = 1;
             FornecedoresModel model = dto;
             if (await _repository.Create(model))
                 return Response<FornecedorDTO>.Ok(model);
@@ -67,7 +68,7 @@ namespace SistemaEstoque.API.Services
 
             FornecedoresModel model = dto;
             model.dthAlteracao = DateTime.Now;
-            model.dthCadastro = fornecedorOriginal.Data.dthCadastro;
+            model.dthCadastro = (DateTime)fornecedorOriginal.Data.dthCadastro;
 
             if (await _repository.Update(model))
                 return Response<FornecedorDTO>.Ok(model);
@@ -81,6 +82,11 @@ namespace SistemaEstoque.API.Services
                 return Response<FornecedorDTO>.Failed("O id desse tipo produto não foi encontrado");
             }
             return await UpdateFornecedor(dto);
+        }
+        public async Task<Response<List<FornecedorDTO>>>CarregarComboFornecedor(FornecedorDTO fornecedor)
+        {
+            var fornecedoRet = await _repository.CarregarComboFornecedor(fornecedor);
+            return Response<List<FornecedorDTO>>.Ok(FornecedorDTO.FromList(fornecedoRet));
         }
     }
 }

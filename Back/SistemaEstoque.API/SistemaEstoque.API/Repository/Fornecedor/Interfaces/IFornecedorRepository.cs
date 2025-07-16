@@ -7,5 +7,6 @@ namespace SistemaEstoque.API.Repository.Fornecedor.Interfaces
         IDbMethods<FornecedoresModel>,
         IPaginacao<FornecedoresModel,FornecedoresModel>
     {
+        public Task<List<FornecedoresModel>> CarregarComboFornecedor(FornecedoresModel model);
     }
 }
