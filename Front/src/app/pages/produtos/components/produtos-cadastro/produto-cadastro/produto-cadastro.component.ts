@@ -17,6 +17,8 @@ import { ProdutoService } from '../../../services/produto.service';
 import { CommonModule } from '@angular/common';
 import { TpProdutoModel } from '../../../models/tpProduto.model';
 import { TpProdutoService } from '../../../services/tp-produto.service';
+import { FornecedorModel } from '../../../../fornecedores/models/forncedor.model';
+import { FornecedorService } from '../../../../fornecedores/services/fornecedor.service';
 
 @Component({
   selector: 'app-produto-cadastro',
@@ -38,10 +40,12 @@ import { TpProdutoService } from '../../../services/tp-produto.service';
 export class ProdutoCadastroComponent {
   produtoForm!: FormGroup;
   tpProduto!: TpProdutoModel[];
+  fornecedores!: FornecedorModel[];
   constructor(
     private router: Router,
     private service: ProdutoService,
-    private tpService: TpProdutoService
+    private tpService: TpProdutoService,
+    private fornecedorService: FornecedorService
   ) {
     const nav = router.getCurrentNavigation();
     const produtoEditar: ProdutoModel = nav?.extras.state?.['produto'];
@@ -95,6 +99,11 @@ export class ProdutoCadastroComponent {
     this.tpService.carregarTpProdutoCombo().subscribe({
       next: (ret) => {
         this.tpProduto = ret;
+      },
+    });
+    this.fornecedorService.carregarCombo().subscribe({
+      next: (ret) => {
+        this.fornecedores = ret;
       },
     });
   }

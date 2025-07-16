@@ -1,14 +1,11 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { environment } from '../../../../environments/environment';
 import { ProdutoModel } from '../models/produto.model';
-import { map, Observable } from 'rxjs';
-import { AuthGuardService } from '../../../core/auth-guard.service';
-import { ResponseApiModel } from '../../../core/model/ResponseApi.model';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ProdutoFiltro } from '../models/produtoFiltro.model';
 import { ApiService } from '../../../core/services/Api/api.service';
 import { Paginacao } from '../../../core/model/paginacao.mode';
+import { AuthGuardService } from '../../../core/services/AuthGuard/auth-guard.service';
 
 @Injectable({
   providedIn: 'root',

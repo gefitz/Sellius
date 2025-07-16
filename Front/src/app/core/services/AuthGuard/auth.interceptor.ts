@@ -1,6 +1,5 @@
-import { HttpInterceptor, HttpInterceptorFn } from '@angular/common/http';
+import { HttpInterceptorFn } from '@angular/common/http';
 import { AuthGuardService } from './auth-guard.service';
-import { CookieService } from 'ngx-cookie-service';
 import { inject } from '@angular/core';
 
 export const autInterceptor: HttpInterceptorFn = (req, next) => {

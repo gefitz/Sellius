@@ -123,9 +123,9 @@ export class ApiService {
   }
 
   private montarHeader(): HttpHeaders {
-    const token = this.cookie.resgatarCookie('token');
+    const token = this.cookie.resgatarCookie('auth_token');
     console.log(token);
-    if (token && token == '') {
+    if (!token || token == '') {
       this.login.sair();
     }
     const headers: HttpHeaders = new HttpHeaders({

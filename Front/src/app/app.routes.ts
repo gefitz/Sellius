@@ -3,12 +3,12 @@ import { ClienteRoutes } from './pages/clientes/cliente.routes';
 import { ProdutoRoutes } from './pages/produtos/produto.routes';
 import { PedidoRoutes } from './pages/pedido/pedido.routes';
 import { SidenavComponent } from './shared/sidenav/component/sidenav/sidenav.component';
-import { AppComponent } from './app.component';
 import { AuthenticationComponent } from './shared/authentication/authentication.component';
 import { LoginComponent } from './pages/login/components/login/login.component';
-import { AuthGuardService } from './core/auth-guard.service';
 import { Usuarioroutes } from './pages/usuario/usario.routes';
 import { Empresaroutes } from './pages/empresa/empresa.route';
+import { FornecedorRoutes } from './pages/fornecedores/fornecedor.route';
+import { AuthGuardService } from './core/services/AuthGuard/auth-guard.service';
 
 export const routes: Routes = [
   {
@@ -19,6 +19,7 @@ export const routes: Routes = [
       ...ProdutoRoutes,
       ...PedidoRoutes,
       ...Usuarioroutes,
+      ...FornecedorRoutes,
     ],
     canActivate: [AuthGuardService],
   },

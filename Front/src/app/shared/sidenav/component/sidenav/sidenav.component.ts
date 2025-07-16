@@ -19,8 +19,8 @@ import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { filter } from 'rxjs';
 import { navItemsModel } from '../../models/navItemsModel.model';
 import { LoginService } from '../../../../pages/login/services/login.service';
-import { AuthGuardService } from '../../../../core/auth-guard.service';
 import { MatExpansionModule } from '@angular/material/expansion';
+import { AuthGuardService } from '../../../../core/services/AuthGuard/auth-guard.service';
 @Component({
   selector: 'app-sidenav',
   standalone: true,
@@ -83,6 +83,12 @@ export class SidenavComponent {
       icon: 'shopping_cart',
       label: 'Pedido',
       route: '/Pedido',
+      children: [],
+    },
+    {
+      icon: 'domain',
+      label: 'Fornecedores',
+      route: '/Fornecedor',
       children: [],
     },
   ];
