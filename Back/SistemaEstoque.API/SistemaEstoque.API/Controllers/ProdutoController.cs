@@ -6,6 +6,7 @@ using SistemaEstoque.API.DTOs.CadastrosDTOs;
 using SistemaEstoque.API.DTOs.TabelasDTOs;
 using SistemaEstoque.API.DTOs;
 using SistemaEstoque.API.DTOs.Filtros;
+using SistemaEstoque.API.Utils;
 
 namespace SistemaEstoque.API.Controllers
 {
@@ -38,7 +39,8 @@ namespace SistemaEstoque.API.Controllers
                 var menssagemErro = string.Join("\n", ModelState.Values.SelectMany(x => x.Errors).Select(e => e.ErrorMessage));
                 return BadRequest(Response<ProdutoDTO>.Failed(menssagemErro));
             }
-            var response = await _service.CadastrarProduto(produtoDTO);
+            produtoDTO.EmpresaId = TokenService.RecuperaIdEmpresa(User);
+           var response = await _service.CadastrarProduto(produtoDTO);
             if (!response.success)
             {
                 return Ok(response);
@@ -53,8 +55,9 @@ namespace SistemaEstoque.API.Controllers
                 var menssagemErro = string.Join("\n", ModelState.Values.SelectMany(x => x.Errors).Select(e => e.ErrorMessage));
                 return BadRequest(Response<ProdutoDTO>.Failed(menssagemErro));
             }
+            produtoDTO.EmpresaId = TokenService.RecuperaIdEmpresa(User);
             var response = await _service.Update(produtoDTO);
-            if (!response.success)
+            if (response.success)
             {
                 return Ok(response);
             }
