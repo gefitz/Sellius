@@ -55,7 +55,12 @@ export class ApiService {
       .pipe(
         map((response) => {
           if (response.success) {
-            this.snack.open(response.message, `Ok`, { duration: 5000 });
+            console.log(`ola`);
+            this.snack.open(response.message, `Ok`, {
+              duration: 5000,
+              horizontalPosition: 'center',
+              verticalPosition: 'bottom',
+            });
             return response.data;
           } else {
             throw new Error(response.errorMessage);
@@ -72,6 +77,7 @@ export class ApiService {
   }
 
   put<model>(endPoint: string, obj: object): Observable<model> {
+    console.log(endPoint);
     return this.http
       .put<ResponseModel<model>>(this.url + endPoint, obj, {
         headers: this.montarHeader(),
@@ -124,13 +130,12 @@ export class ApiService {
 
   private montarHeader(): HttpHeaders {
     const token = this.cookie.resgatarCookie('auth_token');
-    console.log(token);
     if (!token || token == '') {
       this.login.sair();
     }
     const headers: HttpHeaders = new HttpHeaders({
       'Content-Type': 'application/json',
-      // Authorization: token,
+      Authorization: `Bearer ` + token,
     });
     return headers;
   }

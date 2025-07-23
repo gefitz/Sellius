@@ -59,7 +59,14 @@ export class ProdutoCadastroComponent {
       ).toISOString();
       const produto: ProdutoModel = this.produtoForm.value;
       console.log(produto);
-      this.service.cadastrarProduto(produto);
+      produto.tipoProdutoId = this.produtoForm.value.tipoProduto;
+      produto.fornecedorId = this.produtoForm.value.marca;
+      console.log('Ola');
+      if (produto.id == 0) {
+        this.service.cadastrarProduto(produto);
+      } else {
+        this.service.editarProduto(produto);
+      }
     }
   }
   preencherCamposFormulario(produtoEditar: ProdutoModel) {
@@ -68,16 +75,18 @@ export class ProdutoCadastroComponent {
         id: new FormControl(produtoEditar.id),
         Nome: new FormControl(produtoEditar.nome, Validators.required),
         tipoProduto: new FormControl(
-          produtoEditar.tipoProduto,
+          produtoEditar.tipoProdutoId,
           Validators.required
         ),
         qtd: new FormControl(produtoEditar.qtd, [
           Validators.required,
           Validators.min(0),
         ]),
-        marca: new FormControl(produtoEditar.marca, Validators.required),
+        marca: new FormControl(produtoEditar.fornecedorId, Validators.required),
         fAtivo: new FormControl(produtoEditar.fAtivo, Validators.required),
-        dthCriacao: new FormControl(produtoEditar.dthCriacao),
+        dthCriacao: new FormControl(
+          new Date(produtoEditar.dthCriacao).toISOString().split('T')[0]
+        ),
         descricao: new FormControl(produtoEditar.descricao),
         valor: new FormControl(produtoEditar.valor, Validators.required),
       });
