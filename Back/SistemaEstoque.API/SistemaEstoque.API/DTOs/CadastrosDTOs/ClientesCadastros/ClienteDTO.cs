@@ -39,6 +39,8 @@ namespace SistemaEstoque.API.DTOs.CadastrosDTOs.ClientesCadastros
         public string Telefone { get; set; }
         public int EmpresaId { get; set; }
         public short fAtivo { get; set; }
+        public int idSegmentacao { get; set; }
+        public int idGrupo { get; set; }
 
         public static implicit operator  ClienteDTO(ClienteModel dto)
         {
@@ -57,16 +59,10 @@ namespace SistemaEstoque.API.DTOs.CadastrosDTOs.ClientesCadastros
                 Nome = dto.Nome,
                 //Pedidos = dto.Pedidos,
                 Rua = dto.Rua,
+                idGrupo = dto.idGrupo,
+                idSegmentacao = dto.idSegmentacao,
             };
         }
-        public static List<ClienteDTO> FromToList(List<ClienteModel> list)
-        {
-            List<ClienteDTO> dto = new List<ClienteDTO>();
-            for (int i = 0; i < list.Count; i++)
-            {
-                dto.Add(list[i]);
-            }
-            return dto;
-        }
+
     }
 }

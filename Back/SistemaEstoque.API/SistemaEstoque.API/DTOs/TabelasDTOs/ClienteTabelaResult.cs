@@ -1,4 +1,5 @@
-﻿using SistemaEstoque.API.Models.Cliente;
+﻿using SistemaEstoque.API.DTOs.CadastrosDTOs.ClientesCadastros;
+using SistemaEstoque.API.Models.Cliente;
 using System.ComponentModel.DataAnnotations;
 
 namespace SistemaEstoque.API.DTOs.TabelasDTOs
@@ -15,7 +16,8 @@ namespace SistemaEstoque.API.DTOs.TabelasDTOs
         public DateTime dthCadastro { get; set; }
         public DateTime dthAlteracao { get; set; }
         public short fAtivo { get; set; }
-
+        public string Grupo { get; set; }
+        public string Segmentacao { get; set; }
         public static implicit operator ClienteTabelaResult(ClienteModel model)
         {
             return new ClienteTabelaResult
@@ -26,8 +28,19 @@ namespace SistemaEstoque.API.DTOs.TabelasDTOs
                 Rua = model.Rua,
                 Telefone = model.Telefone,
                 fAtivo = model.fAtivo,
-                CidadeEstado = model.Cidade.Cidade + " / " + model.Cidade.Estado.Sigla
+                CidadeEstado = model.Cidade.Cidade + " / " + model.Cidade.Estado.Sigla,
+                Grupo = model.Grupo.nome,
+                Segmentacao = model.segmentacao.Segmento,
             };
+        }
+        public static List<ClienteTabelaResult> FromToList(List<ClienteModel> list)
+        {
+            List<ClienteTabelaResult> dto = new List<ClienteTabelaResult>();
+            for (int i = 0; i < list.Count; i++)
+            {
+                dto.Add(list[i]);
+            }
+            return dto;
         }
     }
 }

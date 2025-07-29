@@ -27,11 +27,13 @@ namespace SistemaEstoque.API.Repository.Cliente
                     .ThenInclude(e => e.Estado)
                     .Include(p => p.Pedidos)
                     .ThenInclude(p => p.Produto)
+                    .Include(s =>  s.Grupo)
+                    .Include( s => s.segmentacao)
                     .Where(c => c.id == obj.id).FirstOrDefaultAsync();
             }
             catch (Exception ex)
             {
-                return null;
+                throw ex;
             }
         }
 
@@ -88,6 +90,12 @@ namespace SistemaEstoque.API.Repository.Cliente
                     .OrderBy(p => p.id)
                     .Skip((obj.PaginaAtual - 1) * obj.TotalRegistros)
                     .Take(obj.TamanhoPagina)
+                    .Include(c => c.Cidade)
+                    .ThenInclude(e => e.Estado)
+                    .Include(p => p.Pedidos)
+                    .ThenInclude(p => p.Produto)
+                    .Include(s => s.Grupo)
+                    .Include(s => s.segmentacao)
                     .ToListAsync();
 
                 return obj;
@@ -109,20 +117,13 @@ namespace SistemaEstoque.API.Repository.Cliente
             try
             {
                 var cidadeCliente = obj.Cidade;
-                if (cidadeCliente.id == 0)
-                {
+
                     var cidade = _context.Cidades.Where(c => c.Cidade.Contains(obj.Cidade.Cidade)).FirstOrDefault();
                     if (cidade == null)
                     {
                         _context.Cidades.Add(cidadeCliente);
-                        await _context.SaveChangesAsync();
-                        obj.Cidade = cidadeCliente;
                     }
-                    else
-                    {
-                        obj.Cidade = cidade;
-                    }
-                }
+                   obj.Cidade = cidadeCliente;
                 _context.Entry(obj).State = EntityState.Modified;
                 await _context.SaveChangesAsync();
                 return true;

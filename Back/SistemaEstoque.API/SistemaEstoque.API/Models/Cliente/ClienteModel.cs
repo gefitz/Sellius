@@ -24,6 +24,8 @@ namespace SistemaEstoque.API.Models.Cliente
         public EmpresaModel Empresa { get; set; }
         public int EmpresaId { get; set; }
         public short fAtivo { get; set; }
+        public int idGrupo { get; set; }
+        public GrupoClienteModel Grupo { get; set; }
 
         public static implicit operator ClienteModel(ClienteDTO dto)
         {
