@@ -13,4 +13,10 @@ export class Cookie {
   resgatarCookie(nomeCookie: string) {
     return this.cookie.get(nomeCookie);
   }
+  guardaCookieUsuario(token: string) {
+    this.cookie.set('auth_token', JSON.stringify(token));
+  }
+  resgatarCookieUsuario() {
+    return this.cookie.get('auth_token');
+  }
 }

@@ -15,6 +15,10 @@ import { FlexLayoutModule } from '@angular/flex-layout';
 import { ProdutoModel } from '../../../models/produto.model';
 import { ProdutoService } from '../../../services/produto.service';
 import { CommonModule } from '@angular/common';
+import { TpProdutoModel } from '../../../models/tpProduto.model';
+import { TpProdutoService } from '../../../services/tp-produto.service';
+import { FornecedorModel } from '../../../../fornecedores/models/forncedor.model';
+import { FornecedorService } from '../../../../fornecedores/services/fornecedor.service';
 
 @Component({
   selector: 'app-produto-cadastro',
@@ -35,21 +39,17 @@ import { CommonModule } from '@angular/common';
 })
 export class ProdutoCadastroComponent {
   produtoForm!: FormGroup;
-  tpProduto = [
-    {
-      id: 1,
-      tipo: 'Cereal',
-      descricao: 'cereal',
-    },
-    {
-      id: 2,
-      tipo: 'Frio',
-      descricao: 'cereal',
-    },
-  ];
-  constructor(private router: Router, private service: ProdutoService) {
+  tpProduto!: TpProdutoModel[];
+  fornecedores!: FornecedorModel[];
+  constructor(
+    private router: Router,
+    private service: ProdutoService,
+    private tpService: TpProdutoService,
+    private fornecedorService: FornecedorService
+  ) {
     const nav = router.getCurrentNavigation();
     const produtoEditar: ProdutoModel = nav?.extras.state?.['produto'];
+    this.carregarCombos();
     this.preencherCamposFormulario(produtoEditar);
   }
   salvarProduto() {
@@ -59,7 +59,14 @@ export class ProdutoCadastroComponent {
       ).toISOString();
       const produto: ProdutoModel = this.produtoForm.value;
       console.log(produto);
-      this.service.cadastrarProduto(produto);
+      produto.tipoProdutoId = this.produtoForm.value.tipoProduto;
+      produto.fornecedorId = this.produtoForm.value.marca;
+      console.log('Ola');
+      if (produto.id == 0) {
+        this.service.cadastrarProduto(produto);
+      } else {
+        this.service.editarProduto(produto);
+      }
     }
   }
   preencherCamposFormulario(produtoEditar: ProdutoModel) {
@@ -68,16 +75,18 @@ export class ProdutoCadastroComponent {
         id: new FormControl(produtoEditar.id),
         Nome: new FormControl(produtoEditar.nome, Validators.required),
         tipoProduto: new FormControl(
-          produtoEditar.tipoProduto,
+          produtoEditar.tipoProdutoId,
           Validators.required
         ),
         qtd: new FormControl(produtoEditar.qtd, [
           Validators.required,
           Validators.min(0),
         ]),
-        marca: new FormControl(produtoEditar.marca, Validators.required),
+        marca: new FormControl(produtoEditar.fornecedorId, Validators.required),
         fAtivo: new FormControl(produtoEditar.fAtivo, Validators.required),
-        dthCriacao: new FormControl(produtoEditar.dthCriacao),
+        dthCriacao: new FormControl(
+          new Date(produtoEditar.dthCriacao).toISOString().split('T')[0]
+        ),
         descricao: new FormControl(produtoEditar.descricao),
         valor: new FormControl(produtoEditar.valor, Validators.required),
       });
@@ -94,5 +103,17 @@ export class ProdutoCadastroComponent {
         valor: new FormControl(0, Validators.required),
       });
     }
+  }
+  carregarCombos() {
+    this.tpService.carregarTpProdutoCombo().subscribe({
+      next: (ret) => {
+        this.tpProduto = ret;
+      },
+    });
+    this.fornecedorService.carregarCombo().subscribe({
+      next: (ret) => {
+        this.fornecedores = ret;
+      },
+    });
   }
 }
