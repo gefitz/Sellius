@@ -21,7 +21,7 @@
     <mat-form-field class="form-control">
       <mat-label for="Marca">Marca Produto: </mat-label>
       <mat-select formControlName="marca">
-        <mat-option [value]="1">Cereal</mat-option>
+        <mat-option *ngFor="let item of fornecedores" [value]="item">{{item.nome}}</mat-option>
       </mat-select>
       <mat-error>O tipo do produto e obrigatorio</mat-error>
     </mat-form-field>

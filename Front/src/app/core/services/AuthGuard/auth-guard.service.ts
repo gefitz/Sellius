@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { jwtDecode } from 'jwt-decode';
 import { CanActivate, Router } from '@angular/router';
 import { CookieService } from 'ngx-cookie-service';
-import { TokenModel } from './model/token.model';
+import { TokenModel } from '../../model/token.model';
 
 @Injectable({
   providedIn: 'root',

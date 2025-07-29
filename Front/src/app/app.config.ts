@@ -9,9 +9,8 @@ import {
   withFetch,
   withInterceptors,
 } from '@angular/common/http';
-import { autInterceptor } from './core/auth.interceptor';
 import { DatePipe } from '@angular/common';
-
+import { autInterceptor } from './core/services/AuthGuard/auth.interceptor';
 export const appConfig: ApplicationConfig = {
   providers: [
     provideZoneChangeDetection({ eventCoalescing: true }),

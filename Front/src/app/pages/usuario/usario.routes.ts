@@ -3,7 +3,7 @@ import { UsuarioCadastroComponent } from './components/usuario-cadastro/usuario-
 
 export const Usuarioroutes: Routes = [
   {
-    path: 'Cadastro',
+    path: 'cadastroUsuario',
     component: UsuarioCadastroComponent,
     data: { title: 'Cadastro de Usuario' },
   },

@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, Input, OnInit, ViewChild } from '@angular/core';
 import {
   FormControl,
   FormGroup,
@@ -16,7 +16,10 @@ import { UsuarioserviceService } from '../../services/usuarioservice.service';
 import { CommonModule } from '@angular/common';
 import { CidadeModel } from '../../../../core/model/cidade.model';
 import { EstadoModel } from '../../../../core/model/estado.model';
-import { MatSelectModule } from '@angular/material/select';
+import { MatSelect, MatSelectModule } from '@angular/material/select';
+import { TipoUsuario } from '../../enums/tipo-usuario.enum';
+import { TipoLicenca } from '../../../../core/enums/tipo-licenca.enum';
+import { ConsumirApi } from '../../../../core/services/Utils/consome-api.serivce';
 
 @Component({
   selector: 'app-usuario-cadastro',
@@ -35,20 +38,23 @@ import { MatSelectModule } from '@angular/material/select';
   templateUrl: './usuario-cadastro.component.html',
   styleUrl: './usuario-cadastro.component.css',
 })
-export class UsuarioCadastroComponent {
-  estado: EstadoModel = {
-    id: 1,
-    estado: 'Parana',
-    sigla: 'Pr',
-  };
-  cidade: CidadeModel[] = [
-    {
-      id: 1,
-      cidade: 'Colombo',
-      estado: this.estado,
-    },
-  ];
+export class UsuarioCadastroComponent implements OnInit {
   formUsuario: FormGroup;
+  tipoUsuario = TipoUsuario;
+  listaTipoUsuario = Object.keys(TipoUsuario)
+    .filter((key) => isNaN(Number(key))) // remove as chaves numéricas
+    .map((key) => ({
+      key: TipoUsuario[key as keyof typeof TipoUsuario],
+      value: key,
+    }));
+  listEstados: EstadoModel[] = [];
+  listCidades: CidadeModel[] = [];
+  @Input() telaCadastroEmpresa: boolean = false;
+
+  @ViewChild('tipoUsuario') selectTipoUsuario!: MatSelect;
+  @Input() origem: string = '';
+  cidade: CidadeModel[] = [];
+  estado: EstadoModel[] = [];
   constructor(private service: UsuarioserviceService) {
     this.formUsuario = new FormGroup({
       id: new FormControl(0),
@@ -57,15 +63,62 @@ export class UsuarioCadastroComponent {
       documento: new FormControl('', Validators.required),
       password: new FormControl('', Validators.required),
       confirmaPassword: new FormControl('', Validators.required),
-      cidade: new FormControl(null, Validators.required),
+      estado: new FormControl(''),
+      cidadeId: new FormControl(null, Validators.required),
       cep: new FormControl('', Validators.required),
       rua: new FormControl('', Validators.required),
+      tipoUsuario: new FormControl('', Validators.required),
     });
+  }
+  ngOnInit(): void {
+    console.log(this.listaTipoUsuario);
+    this.carregaEstado();
+  }
+  ngAfterViewInit(): void {
+    if (this.origem.includes('cadastroEmpresa')) {
+      this.selectTipoUsuario.disabled = true;
+      this.formUsuario.get('tipoUsuario')?.setValue(1);
+    }
   }
   submitCadastro() {
     if (this.formUsuario.valid) {
       const usuairo: UsuarioModel = this.formUsuario.value;
       this.service.createUsuario(usuairo);
+    }
+  }
+  carregaEstado() {
+    ConsumirApi.BuscaEstados()
+      .then((data) => {
+        this.listEstados = data;
+      })
+      .catch((error) => {
+        console.error('Erro ao buscar estados:', error);
+      });
+  }
+  async buscarCidades(estadoId: number) {
+    await ConsumirApi.BuscaCidade(estadoId)
+      .then((data) => {
+        this.listCidades = data;
+      })
+      .catch((error) => {
+        console.error('Erro ao buscar cidades:', error);
+      });
+  }
+  buscarCep() {
+    const cep = this.formUsuario.get('cep')?.value;
+    if (cep && cep.length === 8) {
+      ConsumirApi.BuscaCep(cep)
+        .then(async (data) => {
+          await this.buscarCidades(data.estado || 0);
+          this.formUsuario.patchValue({
+            estado: data.estado,
+            cidadeId: data.cidade,
+            rua: data.rua,
+          });
+        })
+        .catch((error) => {
+          console.error('Erro ao buscar CEP:', error);
+        });
     }
   }
 }
