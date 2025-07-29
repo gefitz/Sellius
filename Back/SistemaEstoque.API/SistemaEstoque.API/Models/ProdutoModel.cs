@@ -11,7 +11,7 @@ namespace SistemaEstoque.API.Models
         public string Descricao { get; set; }
         public int TipoProdutoId {  get; set; }
         public TipoProdutoModel tipoProduto { get; set; }
-        public float valor { get; set; }
+        public decimal valor { get; set; }
         public int qtd { get; set; }
         public DateTime dthCriacao { get; set; }
         public DateTime dthAlteracao { get; set; }
@@ -47,6 +47,7 @@ namespace SistemaEstoque.API.Models
                 dthAlteracao = produtoDTO.dthAlteracao,
                 FornecedorId = produtoDTO.FornecedorId,
                 EmpresaId = produtoDTO.EmpresaId,
+                fAtivo = produtoDTO.fAtivo
             };
         }
         #endregion

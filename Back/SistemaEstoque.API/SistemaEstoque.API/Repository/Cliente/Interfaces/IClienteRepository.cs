@@ -1,5 +1,5 @@
 ﻿using SistemaEstoque.API.DTOs.Filtros;
-using SistemaEstoque.API.Models;
+using SistemaEstoque.API.Models.Cliente;
 using SistemaEstoque.API.Repository.Interfaces;
 
 namespace SistemaEstoque.API.Repository.Cliente.Interfaces

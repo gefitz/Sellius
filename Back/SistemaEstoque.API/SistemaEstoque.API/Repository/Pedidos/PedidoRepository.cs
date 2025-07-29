@@ -6,7 +6,7 @@ using SistemaEstoque.API.DTOs.TabelasDTOs;
 
 namespace SistemaEstoque.API.Repository.Pedidos
 {
-    public class PedidoRepository : IPedido
+    public class PedidoRepository : IPedidoRepository
     {
         private readonly AppDbContext _context;
         private readonly LogRepository _logRepository;

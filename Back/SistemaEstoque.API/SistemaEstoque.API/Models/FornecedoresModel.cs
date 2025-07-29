@@ -16,6 +16,9 @@ namespace SistemaEstoque.API.Models
         public int EmpresaId { get; set; }
         public int CidadeId { get; set; }
         public CidadeModel Cidade { get; set; }
+        public string CEP { get; set; }
+        public string Rua { get; set; }
+        public string? Complemento { get; set; }
 
         public static implicit operator  FornecedoresModel(FornecedorDTO model)
         {
@@ -27,10 +30,13 @@ namespace SistemaEstoque.API.Models
                 Telefone = model.Telefone,
                 Email = model.Email,
                 fAtivo = model.fAtivo,
-                dthAlteracao = model.dthAlteracao,
-                dthCadastro = model.dthCadastro,
-                EmpresaId = model.EmpresaId,
-                CidadeId = model.CidadeId
+                dthAlteracao = (DateTime)model.dthAlteracao,
+                dthCadastro = (DateTime)model.dthCadastro,
+                EmpresaId = (int)model.EmpresaId,
+                CidadeId = (int)model.CidadeId,
+                CEP = model.CEP,
+                Rua = model.Rua,
+                Complemento = model.Complemento,
             };
         }
 

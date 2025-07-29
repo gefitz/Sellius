@@ -1,11 +1,12 @@
 ﻿using SistemaEstoque.API.Models;
-using SistemaEstoque.API.Services;
 using Microsoft.AspNetCore.Mvc;
 using System.Text;
 using SistemaEstoque.API.DTOs.CadastrosDTOs;
 using SistemaEstoque.API.DTOs;
 using SistemaEstoque.API.DTOs.TabelasDTOs;
 using Microsoft.AspNetCore.Authorization;
+using SistemaEstoque.API.Utils;
+using SistemaEstoque.API.Services.Produtos;
 namespace SistemaEstoque.API.Controllers
 {
     [ApiController]
@@ -19,9 +20,18 @@ namespace SistemaEstoque.API.Controllers
         {
             _service = service;
         }
+        [HttpGet("carregarCombo")]
+        public async Task<IActionResult> CarregarCombo()
+        {
+            int idEmpresa = TokenService.RecuperaIdEmpresa(User);
+            var ret = await _service.CarregarCombo(idEmpresa);
+            if (ret.success) { return Ok(ret); }
+            return BadRequest(ret);
+        }
         [HttpPost("ObterTabelaTpProduto")]
         public async Task<IActionResult> ObterTpProduto(PaginacaoTabelaResult<TipoProdutoDTO, TipoProdutoDTO> tipoProdutoDTO)
         {
+            tipoProdutoDTO.Filtro.EmpresaId = TokenService.RecuperaIdEmpresa(User);
             var ret = await _service.BuscarTpProudo(tipoProdutoDTO);
             if (!ret.success)
             {
@@ -37,6 +47,7 @@ namespace SistemaEstoque.API.Controllers
                 var menssagemErro = string.Join("\n", ModelState.Values.SelectMany(x => x.Errors).Select(e => e.ErrorMessage));
                 return BadRequest(Response<TipoProdutoDTO>.Failed(menssagemErro));
             }
+            tipoProduto.EmpresaId = TokenService.RecuperaIdEmpresa(User);
             var ret = await _service.CadastrarTpProduto(tipoProduto);
             if (ret.success) { return Ok(ret); }
             return BadRequest(ret);
@@ -46,6 +57,7 @@ namespace SistemaEstoque.API.Controllers
         [HttpPut]
         public async Task<IActionResult> UpdateTpProduto(TipoProdutoDTO dto)
         {
+            dto.EmpresaId = TokenService.RecuperaIdEmpresa(User);
             if (!ModelState.IsValid)
             {
                 var menssagemErro = string.Join("\n", ModelState.Values.SelectMany(x => x.Errors).Select(e => e.ErrorMessage));
@@ -56,11 +68,10 @@ namespace SistemaEstoque.API.Controllers
             return BadRequest(result);
         }
         [HttpDelete]
-        public async Task<IActionResult> InativarTpProduto(TipoProdutoDTO dto)
+        public async Task<IActionResult> InativarTpProduto(int id)
         {
 
-
-            var result = await _service.InativarTpProduto(dto);
+            var result = await _service.InativarTpProduto(id);
             if (result.success)
             {
                 return Ok(result);

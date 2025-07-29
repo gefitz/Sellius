@@ -18,6 +18,7 @@ namespace SistemaEstoque.API.DTOs.CadastrosDTOs
                 id = model.id,
                 Tipo = model.Tipo,
                 Descricao = model.Descricao,
+                EmpresaId = model.Empresaid,
                 fAtivo = model.fAtivo
             };
         }

@@ -10,9 +10,9 @@ namespace SistemaEstoque.API.Services
 {
     public class UsuarioService
     {
-        private readonly IUsuario _repository;
+        private readonly IUsuariosRepository _repository;
 
-        public UsuarioService(IUsuario repository)
+        public UsuarioService(IUsuariosRepository repository)
         {
             _repository = repository;
         }
@@ -23,7 +23,6 @@ namespace SistemaEstoque.API.Services
 
                 UsuarioModel usuario = dTO;
                 if (await VereficaExistenciaUsuario(dTO)) { return Response<UsuarioDTO>.Failed("Email já esta sendo utilizado"); }
-
                 if (await _repository.Create(usuario))
                 {
                     dTO = usuario;

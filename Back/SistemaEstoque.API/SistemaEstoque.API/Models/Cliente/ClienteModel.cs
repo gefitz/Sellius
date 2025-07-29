@@ -1,7 +1,7 @@
-﻿using SistemaEstoque.API.DTOs.CadastrosDTOs;
+﻿using SistemaEstoque.API.DTOs.CadastrosDTOs.ClientesCadastros;
 using System.ComponentModel.DataAnnotations;
 
-namespace SistemaEstoque.API.Models
+namespace SistemaEstoque.API.Models.Cliente
 {
     public class ClienteModel
     {
@@ -16,12 +16,16 @@ namespace SistemaEstoque.API.Models
         public string Cep { get; set; }
         [DataType(DataType.Date)]
         public DateTime dthNascimeto { get; set; }
+        public SegmentacaoModel segmentacao { get; set; }
+        public int idSegmentacao { get; set; }
         public string Email { get; set; }
         public string Telefone { get; set; }
         public List<PedidoModel> Pedidos { get; set; }
         public EmpresaModel Empresa { get; set; }
         public int EmpresaId { get; set; }
         public short fAtivo { get; set; }
+        public int idGrupo { get; set; }
+        public GrupoClienteModel Grupo { get; set; }
 
         public static implicit operator ClienteModel(ClienteDTO dto)
         {

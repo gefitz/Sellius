@@ -10,10 +10,13 @@ namespace SistemaEstoque.API.DTOs.CadastrosDTOs
         public string Telefone { get; set; }
         public string Email { get; set; }
         public short fAtivo { get; set; }
-        public DateTime dthCadastro { get; set; }
-        public DateTime dthAlteracao { get; set; }
+        public DateTime dthCadastro { get; set; } = DateTime.Now;
+        public DateTime dthAlteracao { get; set; } = DateTime.Now;
         public int EmpresaId { get; set; }
         public int CidadeId { get; set; }
+        public string CEP { get; set; }
+        public string Rua { get; set; }
+        public string? Complemento { get; set; }
 
         public static implicit operator FornecedorDTO(FornecedoresModel model)
         {
@@ -27,7 +30,10 @@ namespace SistemaEstoque.API.DTOs.CadastrosDTOs
                 fAtivo = model.fAtivo,
                 dthAlteracao = model.dthAlteracao,
                 dthCadastro = model.dthCadastro,
-                EmpresaId = model.EmpresaId
+                EmpresaId = model.EmpresaId,
+                CEP = model.CEP,
+                Rua = model.Rua,
+                Complemento = model.Complemento,
             };
         }
         public static List<FornecedorDTO> FromList(List<FornecedoresModel> list)

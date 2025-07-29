@@ -7,5 +7,6 @@ namespace SistemaEstoque.API.Repository.Produto.Interface
         IDbMethods<TipoProdutoModel>,
         IPaginacao<TipoProdutoModel,TipoProdutoModel>
     {
+        Task<List<TipoProdutoModel>> CarregarCombo(int idEmpresa);
     }
 }

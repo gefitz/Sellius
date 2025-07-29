@@ -3,7 +3,7 @@ using SistemaEstoque.API.Repository.Interfaces;
 
 namespace SistemaEstoque.API.Repository.Usuarios.Interfaces
 {
-    public interface IUsuario:
+    public interface IUsuariosRepository :
         IDbMethods<UsuarioModel>,
         IPaginacao<UsuarioModel,UsuarioModel>
     {

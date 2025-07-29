@@ -8,7 +8,7 @@ using SistemaEstoque.API.Repository.Interfaces;
 using SistemaEstoque.API.Repository.Produto;
 using SistemaEstoque.API.Repository.Produto.Interface;
 
-namespace SistemaEstoque.API.Services
+namespace SistemaEstoque.API.Services.Produtos
 {
     public class ProdutoService
     {
@@ -26,7 +26,7 @@ namespace SistemaEstoque.API.Services
                 return Response<ProdutoDTO>.Ok();
             return Response<ProdutoDTO>.Failed("Falha ao cadastrar o produto");
         }
-        public async Task<Response<PaginacaoTabelaResult<ProdutoDTO, FiltroProduto>>> FiltrarProduto(PaginacaoTabelaResult<ProdutoDTO, FiltroProduto> paginacao)
+        public async Task<Response<PaginacaoTabelaResult<ProdutoTabela, FiltroProduto>>> FiltrarProduto(PaginacaoTabelaResult<ProdutoDTO, FiltroProduto> paginacao)
         {
             try
             {
@@ -41,9 +41,9 @@ namespace SistemaEstoque.API.Services
 
                 var paginacaoResult = await _repository.Filtrar(p);
 
-                List<ProdutoDTO> listaProduto = ProdutoDTO.FromModelList(paginacaoResult.Dados);
+                List<ProdutoTabela> listaProduto = ProdutoTabela.FromList(paginacaoResult.Dados);
 
-                var result = new PaginacaoTabelaResult<ProdutoDTO, FiltroProduto>
+                var result = new PaginacaoTabelaResult<ProdutoTabela, FiltroProduto>
                 {
                     TamanhoPagina = paginacaoResult.TamanhoPagina,
                     TotalPaginas = paginacaoResult.TotalPaginas,
@@ -51,11 +51,11 @@ namespace SistemaEstoque.API.Services
                     Dados = listaProduto,
                     TotalRegistros = paginacaoResult.TotalRegistros,
                 };
-                return Response<PaginacaoTabelaResult<ProdutoDTO, FiltroProduto>>.Ok(result);
+               return Response<PaginacaoTabelaResult<ProdutoTabela, FiltroProduto>>.Ok(result);
             }
             catch (Exception ex)
             {
-                return Response<PaginacaoTabelaResult<ProdutoDTO, FiltroProduto>>.Failed(ex.Message);
+                return Response<PaginacaoTabelaResult<ProdutoTabela, FiltroProduto>>.Failed(ex.Message);
             }
 
         }
@@ -71,11 +71,7 @@ namespace SistemaEstoque.API.Services
         }
         public async Task<Response<ProdutoDTO>> Update(ProdutoDTO produto)
         {
-            var produtoOriginal = await BuscarId(produto.id);
-            if (!produtoOriginal.success)
-                return produtoOriginal;
             produto.dthAlteracao = DateTime.Now;
-            produto.dthCriacao = produtoOriginal.Data.dthCriacao;
             if (await _repository.Update(produto)) return Response<ProdutoDTO>.Ok();
             return Response<ProdutoDTO>.Failed("Falha ao tentar salvar o produto");
         }

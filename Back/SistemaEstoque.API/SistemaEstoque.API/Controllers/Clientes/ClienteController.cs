@@ -1,12 +1,13 @@
-﻿using SistemaEstoque.API.Services;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using SistemaEstoque.API.DTOs.CadastrosDTOs;
 using SistemaEstoque.API.DTOs.TabelasDTOs;
 using SistemaEstoque.API.DTOs;
 using SistemaEstoque.API.DTOs.Filtros;
+using SistemaEstoque.API.Utils;
+using SistemaEstoque.API.Services.Clientes;
+using SistemaEstoque.API.DTOs.CadastrosDTOs.ClientesCadastros;
 
-namespace SistemaEstoque.API.Controllers
+namespace SistemaEstoque.API.Controllers.Clientes
 {
     [Authorize]
     [ApiController]
@@ -23,7 +24,7 @@ namespace SistemaEstoque.API.Controllers
         [Authorize(Roles ="Funcionario,Adm,Gerente")]
         public async Task<IActionResult> ObterClientes([FromBody] PaginacaoTabelaResult<ClienteDTO, FiltroCliente> clienteDTO)
         {
-
+            clienteDTO.Filtro.EmpresaId = TokenService.RecuperaIdEmpresa(User);
             var ret = await _service.BuscarClientes(clienteDTO);
             if (!ret.success)
             {
@@ -35,9 +36,9 @@ namespace SistemaEstoque.API.Controllers
         [Authorize(Roles ="Funcionario,Adm,Gerente")]
         public async Task<IActionResult> Cadastrar(ClienteDTO cliente)
         {
+            cliente.EmpresaId = TokenService.RecuperaIdEmpresa(User);
 
-
-                if (!ModelState.IsValid)
+            if (!ModelState.IsValid)
                 {
                     var menssagemErro = string.Join("\n", ModelState.Values.SelectMany(x => x.Errors).Select(e => e.ErrorMessage));
                     return BadRequest(Response<ClienteDTO>.Failed(menssagemErro));
@@ -67,6 +68,7 @@ namespace SistemaEstoque.API.Controllers
         [Authorize(Roles = "Funcionario,Adm,Gerente")]
         public async Task<IActionResult> UpdateCliente(ClienteDTO cliente)
         {
+            cliente.EmpresaId = TokenService.RecuperaIdEmpresa(User);
             if (!ModelState.IsValid)
             {
                 var menssagemErro = string.Join("\n", ModelState.Values.SelectMany(x => x.Errors).Select(e => e.ErrorMessage));

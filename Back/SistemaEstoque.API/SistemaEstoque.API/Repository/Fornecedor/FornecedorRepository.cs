@@ -66,9 +66,9 @@ namespace SistemaEstoque.API.Repository.Fornecedor
                     query = query.Where(p => p.Nome.Contains(obj.Filtro.Nome));
                 if (!string.IsNullOrEmpty( obj.Filtro.CNPJ))
                     query = query.Where(p => p.CNPJ.Equals(obj.Filtro.CNPJ));
-                if (obj.Filtro.fAtivo != 0)
+                if (obj.Filtro.fAtivo != -1)
                     query = query.Where(p => p.fAtivo.Equals(obj.Filtro.fAtivo));
-                query.Where(p => p.EmpresaId == 0);
+                query.Where(p => p.EmpresaId == obj.Filtro.EmpresaId);
 
                 obj.TotalRegistros = query.Count();
                 obj.TotalPaginas = (int)Math.Ceiling((double)obj.TotalRegistros / obj.TamanhoPagina);
@@ -101,6 +101,10 @@ namespace SistemaEstoque.API.Repository.Fornecedor
                 _logRepository.Error(ex);
                 return false;
             }
+        }
+        public Task<List<FornecedoresModel>> CarregarComboFornecedor(FornecedoresModel model)
+        {
+            return _context.Fornecedores.Where(f => f.EmpresaId == model.EmpresaId).ToListAsync();
         }
     }
 }

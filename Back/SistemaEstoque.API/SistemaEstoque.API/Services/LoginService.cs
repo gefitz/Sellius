@@ -14,16 +14,17 @@ using Microsoft.OpenApi.Extensions;
 using SistemaEstoque.API.DTOs.CadastrosDTOs;
 using SistemaEstoque.API.Utils;
 using SistemaEstoque.API.Repository.Login.Interfaces;
+using SistemaEstoque.API.Services.Clientes;
 
 namespace SistemaEstoque.API.Services
 {
     public class LoginService
     {
         private readonly IConfiguration _configuration;
-        private readonly ILogin _repository;
+        private readonly ILoginRepository _repository;
         private readonly TokenService _tokenService;
         private readonly ClienteService _clienteService;
-        public LoginService(IConfiguration configuration, ILogin repository,TokenService tokenService, ClienteService cliente)
+        public LoginService(IConfiguration configuration, ILoginRepository repository,TokenService tokenService, ClienteService cliente)
         {
             _configuration = configuration;
             _repository = repository;
@@ -34,7 +35,8 @@ namespace SistemaEstoque.API.Services
         {
             LoginModel model = login;
             model.usuarioId = usuario.id;
-
+            model.EmpresaId = (int)usuario.EmpresaId;
+            model.TipoUsuario = usuario.TipoUsuario;
            CriptografiaSenha(login.Password,model);
 
             if (await _repository.Create(model))

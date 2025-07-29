@@ -1,14 +1,14 @@
 ﻿using AutoMapper;
 using SistemaEstoque.API.DTOs;
-using SistemaEstoque.API.DTOs.CadastrosDTOs;
+using SistemaEstoque.API.DTOs.CadastrosDTOs.ClientesCadastros;
 using SistemaEstoque.API.DTOs.Filtros;
 using SistemaEstoque.API.DTOs.TabelasDTOs;
-using SistemaEstoque.API.Models;
+using SistemaEstoque.API.Models.Cliente;
 using SistemaEstoque.API.Repository.Cliente.Interfaces;
 using SistemaEstoque.API.Repository.Interfaces;
 using System.Runtime.InteropServices;
 
-namespace SistemaEstoque.API.Services
+namespace SistemaEstoque.API.Services.Clientes
 {
     public class ClienteService
     {

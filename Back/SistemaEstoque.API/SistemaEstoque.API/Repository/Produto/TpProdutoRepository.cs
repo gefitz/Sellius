@@ -50,12 +50,6 @@ namespace SistemaEstoque.API.Repository.Produto
         {
             try
             {
-                var tpProduto = await BuscaDireto(obj);
-                if (tpProduto == null)
-                {
-                    return false;
-                }
-                _context.TpProdutos.Remove(tpProduto);
                 await _context.SaveChangesAsync();
                 return true;
 
@@ -93,7 +87,7 @@ namespace SistemaEstoque.API.Repository.Produto
                     query = query.Where(p => p.Tipo.Contains(obj.Filtro.Tipo));
                 if (!string.IsNullOrEmpty(obj.Filtro.Descricao)) 
                     query = query.Where(p => p.Descricao.Equals(obj.Filtro.Descricao));
-                if (obj.Filtro.fAtivo != 0) 
+                if (obj.Filtro.fAtivo != -1) 
                     query = query.Where(p => p.fAtivo.Equals(obj.Filtro.fAtivo));
 
                 query.Where(p => p.Empresaid == obj.Filtro.Empresaid);
@@ -130,6 +124,14 @@ namespace SistemaEstoque.API.Repository.Produto
                 _log.Error(ex);
                 return false;
             }
+        }
+        public async Task<List<TipoProdutoModel>> CarregarCombo(int idEmpresa)
+        {
+            try
+            {
+                return _context.TpProdutos.Where(tp => tp.Empresaid == idEmpresa && tp.fAtivo == 1).ToList();
+            }
+            catch (Exception ex) { _log.Error(ex); return null; }
         }
     }
 }

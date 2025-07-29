@@ -23,6 +23,12 @@ using SistemaEstoque.API.Repository.Empresa;
 using SistemaEstoque.API.Repository.Usuarios;
 using SistemaEstoque.API.Repository.Usuarios.Interfaces;
 using SistemaEstoque.API.Repository.Empresa.Interface;
+using SistemaEstoque.API.Repository.CidadeEstado;
+using Newtonsoft.Json;
+using SistemaEstoque.API.Services.Clientes;
+using SistemaEstoque.API.Services.Produtos;
+using System.Reflection;
+using SistemaEstoque.API.DI;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -43,35 +49,23 @@ builder.Services.AddCors(opt =>
         {
             build.WithOrigins("http://localhost:4200")
             .AllowAnyHeader()
-            .AllowAnyMethod();
+            .AllowAnyMethod()
+            .AllowCredentials();
         });
 });
 builder.Services.AddAutoMapper(typeof(UsuarioModel));
-
+var assembly = Assembly.GetExecutingAssembly();
 #region Repository
-builder.Services.AddScoped<IClienteRepository, ClienteRepository>();
-builder.Services.AddScoped<IUsuario, UsuariosRepository>();
-builder.Services.AddScoped<IProdutoRepository, ProdutoRepository>();
-builder.Services.AddScoped<ITpProdutoRepository, TpProdutoRepository>();
-builder.Services.AddScoped<IPedido, PedidoRepository>();
-builder.Services.AddScoped<IEmpresa, EmpresaRepository>();
-builder.Services.AddScoped<ILogin, LoginRepository>();
+RepositoryInjecton.RepositoryInjecao(assembly, builder.Services);
+
 builder.Services.AddScoped<IDbMethods<LicencaModel>, LicencaRepository>();
-builder.Services.AddScoped<IFornecedorRepository, FornecedorRepository>();
 builder.Services.AddScoped<LogRepository>();
+builder.Services.AddScoped<IDbMethods<EstadoModel>, EstadoRespository>();
+builder.Services.AddScoped<IDbMethods<CidadeModel>, CidadeRepository>();
 #endregion
 
 #region Services
-builder.Services.AddScoped<UsuarioService>();
-builder.Services.AddScoped<LoginService>();
-builder.Services.AddScoped<ClienteService>();
-builder.Services.AddScoped<ProdutoService>();
-builder.Services.AddScoped<TpProdutoService>();
-builder.Services.AddScoped<PedidoServices>();
-builder.Services.AddScoped<EmpresaService>();
-builder.Services.AddScoped<LicencaService>();
-builder.Services.AddScoped<FornecedorService>();
-builder.Services.AddTransient<TokenService>();
+ServicesInjectoncs.ServicesInjecao(assembly, builder.Services);
 #endregion
 
 builder.Services.AddControllers();
@@ -90,6 +84,31 @@ builder.Services.AddAuthentication("Bearer")
         ValidIssuer = builder.Configuration["jwt:issuer"],
         ValidAudience = builder.Configuration["jwt:audience"],
         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["jwt:secretkey"]))
+    };
+    opt.Events = new JwtBearerEvents
+    {
+        OnAuthenticationFailed = context =>
+        {
+            context.NoResult();
+            context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+            context.Response.ContentType = "application/json";
+
+            string response =
+                JsonConvert.SerializeObject("The access token provided is not valid.");
+            if (context.Exception.GetType() == typeof(SecurityTokenExpiredException))
+            {
+                context.Response.Headers.Add("Token-Expired", "true");
+                response =
+                    JsonConvert.SerializeObject("Token is experied.");
+            }
+
+            context.Response.WriteAsync(response);
+            return Task.CompletedTask;
+        },
+        OnChallenge = c => {
+            c.HandleResponse();
+            return Task.CompletedTask;
+        }
     };
 }
 );

@@ -21,7 +21,7 @@ namespace SistemaEstoque.API.DTOs.CadastrosDTOs
 
         [Required(ErrorMessage = "Necessario a Valor do Produto")]
         [Display(Name = "Valor do Produto")]
-        public float valor { get; set; }
+        public decimal valor { get; set; }
 
         [Required(ErrorMessage = "Necessario a Quantidade do Produto")]
         [Display(Name = "Quantidade do Produto")]
@@ -49,8 +49,9 @@ namespace SistemaEstoque.API.DTOs.CadastrosDTOs
                 qtd = model.qtd,
                 dthCriacao = model.dthCriacao,
                 dthAlteracao = model.dthAlteracao,
-                FornecedorId = model.Fornecedor.id,
-                EmpresaId = model.Empresa.id,
+                FornecedorId = model.FornecedorId,
+                EmpresaId = model.EmpresaId,
+                fAtivo = model.fAtivo
             };
         }
 

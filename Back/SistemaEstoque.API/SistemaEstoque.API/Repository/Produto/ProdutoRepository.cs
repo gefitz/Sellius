@@ -24,7 +24,7 @@ namespace SistemaEstoque.API.Repository.Produto
             try
             {
 
-                var produto = await _context.Produtos.Include(tp => tp.tipoProduto).Where(p => p.id == obj.id).FirstOrDefaultAsync();
+                var produto = await _context.Produtos.Include(tp => tp.tipoProduto).Include(f=>f.Fornecedor).Where(p => p.id == obj.id).AsNoTracking().FirstOrDefaultAsync();
                 if(produto != null)
                 {
                     return produto;
@@ -71,23 +71,25 @@ namespace SistemaEstoque.API.Repository.Produto
         {
             try
             {
-
+                FiltroProduto filtro = (FiltroProduto)obj.Filtro;
                 var query = _context.Produtos.AsQueryable();
 
-                if(!string.IsNullOrEmpty(obj.Filtro.Nome))
-                    query = query.Where(p => p.Nome.Contains(obj.Filtro.Nome));
-                if(obj.Filtro.tipoProdutoId != 0)
-                    query = query.Where(p => p.TipoProdutoId.Equals(obj.Filtro.tipoProdutoId));
-                if (obj.Filtro.fAtivo != 0)
-                    query = query.Where(p => p.fAtivo.Equals(obj.Filtro.fAtivo));
-                if(obj.Filtro.FornecedorId != 0)
-                    query = query.Where(p => p.FornecedorId.Equals(obj.Filtro.FornecedorId));
+                if(!string.IsNullOrEmpty(filtro.Nome))
+                    query = query.Where(p => p.Nome.Contains(filtro.Nome));
+                if(filtro.tipoProdutoId != 0)
+                    query = query.Where(p => p.TipoProdutoId.Equals(filtro.tipoProdutoId));
+                if (filtro.fAtivo != 0)
+                    query = query.Where(p => p.fAtivo.Equals(filtro.fAtivo));
+                if(filtro.FornecedorId != 0)
+                    query = query.Where(p => p.FornecedorId.Equals(filtro.FornecedorId));
                 query.Where(p => p.EmpresaId == 0);
                 
                 obj.TotalRegistros = query.Count();
                 obj.TotalPaginas = (int)Math.Ceiling((double)obj.TotalRegistros / obj.TamanhoPagina);
 
-                obj.Dados = await query
+                obj.Dados =   await query
+                    .Include(tp => tp.tipoProduto)
+                    .Include(f => f.Fornecedor)
                     .OrderBy(p => p.id)
                     .Skip((obj.PaginaAtual - 1) * obj.TotalRegistros)
                     .Take(obj.TamanhoPagina)
@@ -111,16 +113,14 @@ namespace SistemaEstoque.API.Repository.Produto
         {
             try
             {
-                var tp = await _context.TpProdutos.Where(tp => tp.id == obj.tipoProduto.id).FirstOrDefaultAsync();
-                if (tp != null)
-                    obj.tipoProduto = tp;
                 _context.Produtos.Entry(obj).State = EntityState.Modified;
                 await _context.SaveChangesAsync();
                 return true;
             }
             catch (Exception ex)
             {
-                return false;
+                _log.Error(ex);
+                throw ex;
             }
 
         }
