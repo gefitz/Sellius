@@ -10,9 +10,9 @@ namespace SistemaEstoque.API.Services
 {
     public class UsuarioService
     {
-        private readonly IUsuario _repository;
+        private readonly IUsuariosRepository _repository;
 
-        public UsuarioService(IUsuario repository)
+        public UsuarioService(IUsuariosRepository repository)
         {
             _repository = repository;
         }

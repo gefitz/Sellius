@@ -13,9 +13,9 @@ namespace SistemaEstoque.API.Services
 {
     public class PedidoServices
     {
-        private readonly IPedido _repository;
+        private readonly IPedidoRepository _repository;
         private readonly IProdutoRepository _produtoRepository;
-        public PedidoServices(IPedido repository, IProdutoRepository dbMethods)
+        public PedidoServices(IPedidoRepository repository, IProdutoRepository dbMethods)
         {
             _repository = repository;
             _produtoRepository = dbMethods;

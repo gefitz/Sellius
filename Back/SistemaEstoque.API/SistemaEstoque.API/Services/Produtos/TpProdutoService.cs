@@ -6,7 +6,7 @@ using SistemaEstoque.API.Models;
 using SistemaEstoque.API.Repository.Interfaces;
 using SistemaEstoque.API.Repository.Produto.Interface;
 
-namespace SistemaEstoque.API.Services
+namespace SistemaEstoque.API.Services.Produtos
 {
     public class TpProdutoService
     {

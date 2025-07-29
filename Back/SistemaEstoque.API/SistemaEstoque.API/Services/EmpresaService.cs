@@ -11,12 +11,12 @@ namespace SistemaEstoque.API.Services
 {
     public class EmpresaService
     {
-        private IEmpresa _repository;
+        private IEmpresaRepository _repository;
         private UsuarioService _usarioService;
         private LoginService _loginService;
         private AppDbContext _context;
         private LicencaService _licenca;
-        public EmpresaService(IEmpresa repository, UsuarioService suarioService, LoginService loginService, AppDbContext context, LicencaService licenca)
+        public EmpresaService(IEmpresaRepository repository, UsuarioService suarioService, LoginService loginService, AppDbContext context, LicencaService licenca)
         {
             _repository = repository;
             _usarioService = suarioService;

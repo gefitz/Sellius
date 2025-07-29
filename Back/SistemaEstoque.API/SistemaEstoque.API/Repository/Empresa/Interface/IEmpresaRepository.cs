@@ -3,7 +3,7 @@ using SistemaEstoque.API.Repository.Interfaces;
 
 namespace SistemaEstoque.API.Repository.Empresa.Interface
 {
-    public interface IEmpresa:
+    public interface IEmpresaRepository:
         IDbMethods<EmpresaModel>,
         IPaginacao<EmpresaModel, EmpresaModel>
     {

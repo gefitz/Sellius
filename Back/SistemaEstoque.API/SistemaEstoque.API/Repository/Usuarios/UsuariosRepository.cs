@@ -9,7 +9,7 @@ using SistemaEstoque.API.DTOs.TabelasDTOs;
 
 namespace SistemaEstoque.API.Repository.Usuarios
 {
-    public class UsuariosRepository : IUsuario
+    public class UsuariosRepository : IUsuariosRepository
     {
         private readonly AppDbContext _context;
         private readonly LogRepository _log;

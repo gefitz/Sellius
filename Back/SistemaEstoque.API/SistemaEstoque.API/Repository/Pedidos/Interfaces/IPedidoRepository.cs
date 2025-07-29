@@ -3,7 +3,7 @@ using SistemaEstoque.API.Repository.Interfaces;
 
 namespace SistemaEstoque.API.Repository.Pedidos.Interfaces
 {
-    public interface IPedido:
+    public interface IPedidoRepository:
         IDbMethods<PedidoModel>,
         IPaginacao<PedidoModel,PedidoModel>
         

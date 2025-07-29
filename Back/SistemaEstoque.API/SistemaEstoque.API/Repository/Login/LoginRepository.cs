@@ -6,7 +6,7 @@ using SistemaEstoque.API.Repository.Login.Interfaces;
 
 namespace SistemaEstoque.API.Repository.Login
 {
-    public class LoginRepository : ILogin
+    public class LoginRepository : ILoginRepository
     {
         private AppDbContext _context;
         private LogRepository _log;

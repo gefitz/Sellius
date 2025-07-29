@@ -8,7 +8,7 @@ using SistemaEstoque.API.Repository.Interfaces;
 
 namespace SistemaEstoque.API.Repository.Empresa
 {
-    public class EmpresaRepository : IEmpresa
+    public class EmpresaRepository : IEmpresaRepository
     {
         private AppDbContext _context;
         private LogRepository _log;
