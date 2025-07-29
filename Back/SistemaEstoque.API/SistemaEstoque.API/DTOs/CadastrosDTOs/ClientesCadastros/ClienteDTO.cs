@@ -1,7 +1,7 @@
-﻿using SistemaEstoque.API.Models;
+﻿using SistemaEstoque.API.Models.Cliente;
 using System.ComponentModel.DataAnnotations;
 
-namespace SistemaEstoque.API.DTOs.CadastrosDTOs
+namespace SistemaEstoque.API.DTOs.CadastrosDTOs.ClientesCadastros
 {
     public class ClienteDTO
     {

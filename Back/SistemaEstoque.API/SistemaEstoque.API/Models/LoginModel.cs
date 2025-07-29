@@ -1,5 +1,6 @@
 ﻿using SistemaEstoque.API.DTOs.CadastrosDTOs;
 using SistemaEstoque.API.Enums;
+using SistemaEstoque.API.Models.Cliente;
 
 namespace SistemaEstoque.API.Models
 {

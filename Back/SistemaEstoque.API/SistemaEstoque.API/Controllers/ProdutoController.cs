@@ -1,5 +1,4 @@
 ﻿using SistemaEstoque.API.Models;
-using SistemaEstoque.API.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SistemaEstoque.API.DTOs.CadastrosDTOs;
@@ -7,6 +6,7 @@ using SistemaEstoque.API.DTOs.TabelasDTOs;
 using SistemaEstoque.API.DTOs;
 using SistemaEstoque.API.DTOs.Filtros;
 using SistemaEstoque.API.Utils;
+using SistemaEstoque.API.Services.Produtos;
 
 namespace SistemaEstoque.API.Controllers
 {

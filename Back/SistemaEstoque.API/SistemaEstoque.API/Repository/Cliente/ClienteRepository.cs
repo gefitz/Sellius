@@ -1,10 +1,10 @@
 ﻿using SistemaEstoque.API.Context;
-using SistemaEstoque.API.Models;
 using SistemaEstoque.API.Repository.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using SistemaEstoque.API.Repository.Cliente.Interfaces;
 using SistemaEstoque.API.DTOs.TabelasDTOs;
 using SistemaEstoque.API.DTOs.Filtros;
+using SistemaEstoque.API.Models.Cliente;
 
 namespace SistemaEstoque.API.Repository.Cliente
 {

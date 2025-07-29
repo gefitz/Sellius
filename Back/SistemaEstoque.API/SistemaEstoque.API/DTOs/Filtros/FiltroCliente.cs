@@ -5,7 +5,6 @@
         public string Nome { get; set; }
         public string Documento { get; set; }
         public int CidadeId { get; set; }
-        public int MyProperty { get; set; }
         public short fAtivo { get; set; }
         public int EmpresaId { get; set; }
     }

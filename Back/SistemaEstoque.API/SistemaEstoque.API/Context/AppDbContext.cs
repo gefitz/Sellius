@@ -1,5 +1,6 @@
 ﻿using SistemaEstoque.API.Models;
 using Microsoft.EntityFrameworkCore;
+using SistemaEstoque.API.Models.Cliente;
 
 namespace SistemaEstoque.API.Context
 {
@@ -19,6 +20,8 @@ namespace SistemaEstoque.API.Context
         public DbSet<ProdutoModel> Produtos { get; set; }
         public DbSet<TipoProdutoModel> TpProdutos { get; set; }
         public DbSet<UsuarioModel> Usuarios { get; set; }
+        public DbSet<SegmentacaoModel> Segmentacaos { get; set; }
+        public DbSet<GrupoClienteModel> GrupoClientes { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
